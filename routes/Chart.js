@@ -1,17 +1,30 @@
-var express = require('express');
-var router = express.Router();
+let express = require('express')
+let dataRepoisitory = require('../ChartGenerator/Repositories/DataRepository')
+let router = express.Router()
 
-router.get('/rtp', function(req, res, next) {
+router.get('/rtp', (req, res, next) => {
+  let request = req.query
+
+  dataRepoisitory.getRTP(request).then(result => {
+    res.json(result)
+  })
+})
+
+router.get('/totalNetWin', (req, res, next) => {
+  let request = req.query
+
+  dataRepoisitory.getTotalNetWin(request).then(result => {
+    res.json(result)
+  })
+})
+
+router.get('/survivalRate', (req, res, next) => {
+  let request = req.query
   
-});
-
-router.get('/totalNetWin', function(req, res, next) {
-
-});
-
-router.get('/survivalRate', function(req, res, next) {
-  
-});
+  dataRepoisitory.getSurvivalRate(request).then(result => {
+    res.json(result)
+  })
+})
 
 
-module.exports = router;
+module.exports = router
