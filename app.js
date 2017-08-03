@@ -1,12 +1,15 @@
-let express = require('express')
-let path = require('path')
-let favicon = require('serve-favicon')
-let logger = require('morgan')
+let express      = require('express')
+let path         = require('path')
+let favicon      = require('serve-favicon')
+let logger       = require('morgan')
 let cookieParser = require('cookie-parser')
-let bodyParser = require('body-parser')
+let bodyParser   = require('body-parser')
 
+let Account = require('./routes/Account')
 let Project = require('./routes/Project')
-let Chart = require('./routes/Chart')
+let Chart   = require('./routes/Chart')
+
+let RedisRepository = require('./ChartGenerator/Repositories/RedisRepository')
 
 let app = express()
 
@@ -22,18 +25,29 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
+app.use('/account', Account)
+
+app.use((req, res, next) => {
+  var token = req.get("Authorization")
+  RedisRepository.getAccount(token).then(result => {
+    next();
+  }).catch(error => {
+    res.json({error: 'serverError'})
+  })
+})
+
 app.use('/project', Project)
 app.use('/chart', Chart)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use((req, res, next) => {
   let err = new Error('Not Found')
   err.status = 404
   next(err)
 })
 
 // error handler
-app.use(function(err, req, res, next) {
+app.use((err, req, res, next) => {
   // set locals, only providing error in development
   res.locals.message = err.message
   res.locals.error = req.app.get('env') === 'development' ? err : {}
