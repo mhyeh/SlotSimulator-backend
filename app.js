@@ -5,6 +5,7 @@ let logger = require('morgan')
 let cookieParser = require('cookie-parser')
 let bodyParser = require('body-parser')
 
+let Project = require('./routes/Project')
 let Chart = require('./routes/Chart')
 
 let app = express()
@@ -21,7 +22,8 @@ app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
 
-app.use('/', Chart)
+app.use('/project', Project)
+app.use('/chart', Chart)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
