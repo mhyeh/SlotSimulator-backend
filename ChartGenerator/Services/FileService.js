@@ -1,6 +1,6 @@
 let Promise = require('bluebird')
 
-let CreateFile = function (request) {
+let CreateFile = function (name, context) {
   // TODO: create file
 }
 
@@ -14,6 +14,7 @@ let ReadFile = function (name) {
 
 module.exports = {
   CreateFile: CreateFile,
-  DeleteFile: DeleteFile
+  DeleteFile: DeleteFile,
+  ReadFile:   ReadFile
 }
 

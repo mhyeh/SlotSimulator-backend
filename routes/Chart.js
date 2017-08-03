@@ -1,5 +1,7 @@
 let express = require('express')
+
 let dataRepoisitory = require('../ChartGenerator/Repositories/DataRepository')
+
 let router = express.Router()
 
 router.get('/rtp', (req, res, next) => {
