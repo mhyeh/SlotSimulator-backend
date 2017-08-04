@@ -26,7 +26,7 @@ let getProjectById = function (token, id) {
   return new Promise((resolve, reject) => {
     let data = {}
     redisRepository.getAccountId(token).then(accountId => {
-      return projectRepoisitory.getProjectById(accountId, id)
+      return projectRepoisitory.getProjectById(id)
     }).then(projectInfo => {
       data = projectInfo
   
@@ -151,7 +151,7 @@ let deleteProject = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
-      return projectRepoisitory.deleteProject(userId, id)
+      return projectRepoisitory.deleteProject(id)
      }).then(() => {
       return fileService.deleteFolder(folder + userId + '/' + id)
      }).then(() => {

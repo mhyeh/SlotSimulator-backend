@@ -1,0 +1,11 @@
+{
+  "dev": {
+    "user": "root",
+    "password": "yehminhsuan",
+    "server": "localhost",
+    "datablase": "slot",
+    "port": "3306",
+    "waitForConnections" : true,
+    "connectionLimit" : 10
+  }
+}
