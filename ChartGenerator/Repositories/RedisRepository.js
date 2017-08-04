@@ -13,30 +13,30 @@ cache.on("error", err => {
   console.log(err)
 })
 
-let set = function (token, account) {
-  cache.set(token, account)
+let set = function (token, accountId) {
+  cache.set(token, accountId)
   cache.expire(token, existTime)
 
-  cache.set(account, token)
-  cache.expire(account, existTime)
+  cache.set(accountId, token)
+  cache.expire(accountId, existTime)
 }
 
-let checkAccount = function (token, account) {
+let checkAccount = function (token, accountId) {
   let Token = token
-  let Account = account
+  let AccountId = accountId
 
-  getAccount(Account).then(result => {
+  getAccount(AccountId).then(result => {
     return cache.delAsync(result)
   }).then(() => {
-    return cache.delAsync(Account)
+    return cache.delAsync(AccountId)
   }).then(() => {
-    set(Token, Account)
+    set(Token, AccountId)
   }).catch(() => {
-    set(Token, Account)
+    set(Token, AccountId)
   })
 }
 
-let getAccount = function (token) {
+let getAccountId = function (token) {
   return new Promise((resolve, reject) => {
     cache.getAsync(token).then(result => {
       if (result) {
@@ -50,8 +50,8 @@ let getAccount = function (token) {
 
 let getUserData = function (token) {
   return new Promise((resolve, reject) => {
-    getAccount(token).then(result => {
-      return AccountRepository.getUserInfo(result)
+    getAccountId(token).then(result => {
+      return AccountRepository.getAccountById(result)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -63,6 +63,6 @@ let getUserData = function (token) {
 module.exports = {
   set:          set,
   checkAccount: checkAccount,
-  getAccount:   getAccount,
+  getAccountId: getAccountId,
   getUserData:  getUserData
 }
