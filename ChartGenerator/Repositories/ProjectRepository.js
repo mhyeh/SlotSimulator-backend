@@ -1,4 +1,5 @@
 let Promise = require('bluebird')
+let squel   = require('squel')
 
 let getAllProject = function (userId) {
   return new Promise((resolve, reject) => {
@@ -12,6 +13,13 @@ let getProjectById = function (userId, id) {
     let result = {}
 
     // TODO: sql select where id = id
+  })
+}
+
+let getNewestProject = function (userid) {
+  return new Promise((resolve, reject) => {
+    let result = {}
+
   })
 }
 
@@ -34,9 +42,10 @@ let deleteProject = function (userId, id) {
 }
 
 module.exports = {
-  getAllProject:  getAllProject,
-  getProjectById: getProjectById,
-  createProject:  createProject,
-  updateProject:  updateProject,
-  deleteProject:  deleteProject
+  getAllProject:    getAllProject,
+  getProjectById:   getProjectById,
+  getNewestProject: getNewestProject,
+  createProject:    createProject,
+  updateProject:    updateProject,
+  deleteProject:    deleteProject
 }
