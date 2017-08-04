@@ -5,17 +5,17 @@ let projectRepoisitory = require('../Repositories/ProjectRepository')
 let fileService        = require('./FileService')
 
 let dataSet  = ['name', 'block', 'thread', 'runTime', 'symbol', 'reels', 'rows', 'betCost']
-let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'path']
+let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr']
 
 let extension = '.csv'
 let folder    = './'
 
 let getAllProject = function (token) {
   return new Promise((resolve, reject) => {
-    redisRepository.getAccountId(req.get('Authorization')).then(result => {
-      return projectRepoisitory.getAllProject(result)
-    }).then(result => {
-      resolve(result)
+    redisRepository.getAccountId(req.get('Authorization')).then(accountId => {
+      return projectRepoisitory.getAllProject(accountId)
+    }).then(allProject => {
+      resolve(allProject)
     }).catch(error => {
       reject()
     })
@@ -25,10 +25,10 @@ let getAllProject = function (token) {
 let getProjectById = function (token, id) {
   return new Promise((resolve, reject) => {
     let data = {}
-    redisRepository.getAccountId(token).then(result => {
-      return projectRepoisitory.getProjectById(result, id)
-    }).then(result => {
-      data = result
+    redisRepository.getAccountId(token).then(accountId => {
+      return projectRepoisitory.getProjectById(accountId, id)
+    }).then(projectInfo => {
+      data = projectInfo
   
       let readFile = {}
       for (let i of fileName) {
@@ -36,9 +36,9 @@ let getProjectById = function (token, id) {
       }
       
       return Promise.props(readFile)
-    }).then(result => {
+    }).then(fileContext => {
       for (let i of fileName) {
-        data[i] = result[i]
+        data[i] = fileContext[i]
       }
       resolve(data)
     }).catch(err => {
@@ -50,8 +50,8 @@ let getProjectById = function (token, id) {
 let create = function (token, body) {
   let userId
   return new Promise((resolve, reject) => {
-    redisRepository.getAccountId(token).then(result => {
-      userId = result
+    redisRepository.getAccountId(token).then(accountId => {
+      userId = accountId
 
       for (let i of dataSet) {
         if (body[i] === undefined) {
@@ -72,8 +72,8 @@ let create = function (token, body) {
       return projectRepoisitory.createProject(userId, data)
     }).then(() => {
       return projectRepoisitory.getNewestProject(userId)
-    }).then(result => {
-      let path = folder + userId + '/' + result.id
+    }).then(projectInfo => {
+      let path = folder + userId + '/' + projectInfo.id
   
       for (let i of fileName) {
         data[i] = path + '/' + i + extension
@@ -90,7 +90,7 @@ let create = function (token, body) {
       }).catch(error => {
         reject()
       })
-    }).catch(err => {
+    }).catch(error => {
       reject()
     })
   })
@@ -98,8 +98,8 @@ let create = function (token, body) {
 
 let update = function (token, id, body) {
   return new Promise((resolve, reject) => {
-    redisRepository.getAccountId(token).then(result => {
-      let userId = result
+    redisRepository.getAccountId(token).then(accountId => {
+      let userId = accountId
       let path   = folder + userId + '/' + id
   
       let data = {
@@ -149,8 +149,8 @@ let update = function (token, id, body) {
 let deleteProject = function (token, id) {
   let userId
   return new Promise((resolve, reject) => {
-    redisRepository.getAccountId(token).then(result => {
-      userId = result
+    redisRepository.getAccountId(token).then(accountId => {
+      userId = accountId
       return projectRepoisitory.deleteProject(userId, id)
      }).then(() => {
       return fileService.deleteFolder(folder + userId + '/' + id)

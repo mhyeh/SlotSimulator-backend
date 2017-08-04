@@ -25,7 +25,7 @@ let checkAccount = function (token, accountId) {
   let Token = token
   let AccountId = accountId
 
-  getAccount(AccountId).then(result => {
+  getAccountId(AccountId).then(result => {
     return cache.delAsync(result)
   }).then(() => {
     return cache.delAsync(AccountId)
@@ -38,9 +38,9 @@ let checkAccount = function (token, accountId) {
 
 let getAccountId = function (token) {
   return new Promise((resolve, reject) => {
-    cache.getAsync(token).then(result => {
-      if (result) {
-        resolve(result)
+    cache.getAsync(token).then(accountId => {
+      if (accountId) {
+        resolve(accountId)
       } else {
         reject()
       }
@@ -48,12 +48,12 @@ let getAccountId = function (token) {
   })
 }
 
-let getUserData = function (token) {
+let getAccountInfo = function (token) {
   return new Promise((resolve, reject) => {
-    getAccountId(token).then(result => {
-      return AccountRepository.getAccountById(result)
-    }).then(result => {
-      resolve(result)
+    getAccountId(token).then(accountId => {
+      return AccountRepository.getAccountById(accountId)
+    }).then(accountInfo => {
+      resolve(accountInfo)
     }).catch(error => {
       reject(error)
     })
@@ -61,8 +61,8 @@ let getUserData = function (token) {
 }
 
 module.exports = {
-  set:          set,
-  checkAccount: checkAccount,
-  getAccountId: getAccountId,
-  getUserData:  getUserData
+  set:             set,
+  checkAccount:    checkAccount,
+  getAccountId:    getAccountId,
+  getAccountInfo:  getAccountInfo
 }

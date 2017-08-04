@@ -5,16 +5,16 @@ let projectService = require('../ChartGenerator/Services/ProjectService')
 let router = express.Router()
 
 router.get('/', (req, res, next) => {
-  projectService.getAllProject(req.get('Authorization')).then(result => {
-    res.json(result)
+  projectService.getAllProject(req.get('Authorization')).then(allProject => {
+    res.json(allProject)
   }).catch(() => {
     res.json({error: 'serverError'})
   })
 })
 
 router.get('/:id', (req, res, next) => {
-  projectService.getProjectById(req.get('Authorization'), req.params.id).then(result => {
-    res.json(result)
+  projectService.getProjectById(req.get('Authorization'), req.params.id).then(project => {
+    res.json(project)
   }).catch(() => {
     res.json({error: 'serverError'})
   })

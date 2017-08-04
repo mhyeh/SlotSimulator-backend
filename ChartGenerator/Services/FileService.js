@@ -5,7 +5,7 @@ let rimraf  = Promise.promisify(require('rimraf'))
 
 let createFile = function (name, context) {
   return new Promise((resolve, reject) => {
-    fs.writeFileAsync(name, context).then(result => {
+    fs.writeFileAsync(name, context).then(() => {
       resolve()
     }).catch(error => {
       reject()
@@ -15,7 +15,7 @@ let createFile = function (name, context) {
 
 let deleteFile = function (name) {
   return new Promise((resolve, reject) => {
-    fs.unlinkAsync(name).then(result => {
+    fs.unlinkAsync(name).then(() => {
       resolve()
     }).catch(error => {
       reject()
@@ -25,8 +25,8 @@ let deleteFile = function (name) {
 
 let readFile = function (name) {
   return new Promise((resolve, reject) => {
-    fs.readFileAsync(name).then(result => {
-      resolve(result)
+    fs.readFileAsync(name).then((context) => {
+      resolve(context)
     }).catch(error => {
       reject()
     })
@@ -35,7 +35,7 @@ let readFile = function (name) {
 
 let createFolder = function (name) {
   return new Promise((resolve, reject) => {
-    mkdirp.mkdirpAsync(name).then(result => {
+    mkdirp.mkdirpAsync(name).then(() => {
       resolve()
     }).catch(error => {
       reject()
@@ -45,7 +45,7 @@ let createFolder = function (name) {
 
 let deleteFolder = function (path) {
   return new Promise((resolve, reject) => {
-    rimraf(path).then(result => {
+    rimraf(path).then(() => {
       resolve()
     }).catch(error => {
       reject()
