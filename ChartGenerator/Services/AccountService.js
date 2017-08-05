@@ -20,6 +20,8 @@ let createToken = function (accountId) {
     getUnusedToken().then(token => {
       RedisRepository.checkAccount(token, accountId)
       resolve(token)
+    }).catch(error => {
+      reject()
     })
   })
 }
@@ -51,23 +53,27 @@ let register = function (user) {
     if (user.password === undefined || user.checkPassword === undefined || user.account === undefined || 
       user.password != user.checkPassword || user.name === undefined) {
       reject()
-    }
+    } else {
+      let hsahPassword = bcrypt.hashSync(user.password);
   
-    let hsahPassword = bcrypt.hashSync(user.password);
-  
-    AccountRepository.getPassword(user.account).then(() => {
-      reject()
-    }).catch(() => {
-      AccountRepository.createAccount(user.account, hsahPassword, user.name).then(() => {
-        return AccountRepository.getAccount(user.account)
-      }).then(accountInfo => {
-        return createToken(accountInfo.id)
-      }).then(token => {
-        resolve(token)
+      AccountRepository.getPassword(user.account).then(password => {
+        if (password != '') {
+          reject()
+        } else {
+          AccountRepository.createAccount(user.account, hsahPassword, user.name).then(() => {
+            return AccountRepository.getAccount(user.account)
+          }).then(accountInfo => {
+            return createToken(accountInfo.id)
+          }).then(token => {
+            resolve(token)
+          }).catch(error => {
+            reject(error)
+          })
+        }
       }).catch(error => {
-        reject()
+        reject(error)
       })
-    })
+    }
   })
 }
 
@@ -78,21 +84,20 @@ let update = function (token, updateData) {
       return AccountRepository.getAccountById(accountId)
     }).then((accountInfo) => {
       userData = accountInfo
-  
       if (updateData.password === undefined || !bcrypt.compareSync(updateData.password, userData.password)) {
-        res.json({error: 'serverError'})
+        reject()
+      } else {
+        updateData.newName     = ((updateData.newName != undefined) ? updateData.newName : userData.newName)
+        updateData.newPassword = ((updateData.newPassword != undefined && updateData.newCheckPassword != undefined &&
+                                  updateData.newPassword === updateData.newCheckPassword) ? 
+                                  bcrypt.hashSync(updateData.newPassword) : userData.password)
+        AccountRepository.updateAccount(userData.id, updateData.newPassword, updateData.newName).then(() => {
+          RedisRepository.set(token, userData.id)
+          resolve(token)
+        }).catch(error => {
+          reject()
+        })
       }
-  
-      updateData.newName     = ((updateData.newName != undefined) ? updateData.newName : userData.newName)
-      updateData.newPassword = ((updateData.newPassword != undefined && updateData.checkNewPassword != undefined &&
-                                 updateData.newPassword === updateData.checkNewPassword) ? 
-                                 bcrypt.hashSync(updateData.newPassword) : userData.password)
-      
-      return AccountRepository.updateAccount(userData.id, updateData.newPassword, updateData.newName)
-      }).then(() => {
-      return createToken(userData.id)
-      }).then(token => {
-      resolve(oken)
     }).catch(error => {
       reject()
     })
@@ -103,13 +108,17 @@ let checkAccount = function (account) {
   return new Promise((resolve, reject) => {
     if (account === undefined) {
       reject()
+    } else {
+      AccountRepository.getPassword(account).then(password => {
+        if (password == '') {
+          resolve()
+        } else {
+          reject()
+        }
+      }).catch(error => {
+        reject()
+      })
     }
-    
-    AccountRepository.getPassword(account).then(password => {
-      reject()
-    }).catch(() => {
-      resolve()
-    })
   }) 
 }
 

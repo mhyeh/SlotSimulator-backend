@@ -4,8 +4,8 @@ let model = require('../connect')
 
 let getPassword = function (account) {
   return new Promise((resolve, reject) => {
-    model.knex.select('password').from('account').where('account', account).then(password => {
-      resolve(password)
+    model.knex.select('password').from('account').where('account', account).then(account => {
+      resolve(((account[0] === undefined) ? '' : account[0].password))
     }).catch(error => {
       console.log(error)
       reject()
@@ -16,7 +16,7 @@ let getPassword = function (account) {
 let getAccountById = function (id) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('account').where('id', id).then(accountInfo => {
-      resolve(accountInfo)
+      resolve(accountInfo[0])
     }).catch(error => {
       console.log(error)
       reject()
@@ -49,7 +49,7 @@ let updateAccount = function (id, password, name) {
 let getAccount = function (account) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('account').where('account', account).then(accountInfo => {
-      resolve(accountInfo)
+      resolve(accountInfo[0])
     }).catch(error => {
       console.log(error)
       reject()

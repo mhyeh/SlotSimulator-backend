@@ -5,12 +5,12 @@ var redis = Promise.promisifyAll(require('redis'))
 var existTime = 60 * 30
 var cache = redis.createClient()
 
-cache.on('ready', err => {
+cache.on('ready', error => {
   console.log('ready')
 })
 
-cache.on("error", err => {
-  console.log(err)
+cache.on("error", error => {
+  console.log(error)
 })
 
 let set = function (token, accountId) {
