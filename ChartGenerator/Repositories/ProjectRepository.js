@@ -24,7 +24,7 @@ let getAllProject = function (userId) {
 let getProjectById = function (id) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('project').where('id', id).then(project => {
-      resolve(project)
+      resolve(project[0])
     }).catch(error => {
       console.log(error)
       reject()

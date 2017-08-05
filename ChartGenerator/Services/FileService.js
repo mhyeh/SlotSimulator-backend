@@ -1,13 +1,18 @@
 let Promise = require('bluebird')
+let path    = require('path')
 let fs      = Promise.promisifyAll(require('fs'))
 let mkdirp  = Promise.promisifyAll(require('mkdirp'))
 let rimraf  = Promise.promisify(require('rimraf'))
 
+let appRoot = path.join(path.dirname(require.main.filename), '../')
+
 let createFile = function (name, context) {
   return new Promise((resolve, reject) => {
-    fs.writeFileAsync(name, context).then(() => {
+    
+    fs.writeFileAsync(path.join(appRoot, name), context).then(() => {
       resolve()
     }).catch(error => {
+      console.log(error)
       reject()
     })
   })
@@ -15,7 +20,7 @@ let createFile = function (name, context) {
 
 let deleteFile = function (name) {
   return new Promise((resolve, reject) => {
-    fs.unlinkAsync(name).then(() => {
+    fs.unlinkAsync(path.join(appRoot, name)).then(() => {
       resolve()
     }).catch(error => {
       reject()
@@ -25,9 +30,10 @@ let deleteFile = function (name) {
 
 let readFile = function (name) {
   return new Promise((resolve, reject) => {
-    fs.readFileAsync(name).then((context) => {
+    fs.readFileAsync(path.join(appRoot, name), 'utf8').then(context => {
       resolve(context)
     }).catch(error => {
+      console.log(error)
       reject()
     })
   })
@@ -38,6 +44,7 @@ let createFolder = function (name) {
     mkdirp.mkdirpAsync(name).then(() => {
       resolve()
     }).catch(error => {
+      console.log(error)
       reject()
     })
   })

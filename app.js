@@ -27,8 +27,8 @@ app.use(express.static(path.join(__dirname, 'public')))
 app.use('/account', Account)
 
 app.use((req, res, next) => {
-  var token = req.get("Authorization")
-  RedisRepository.getAccount(token).then(result => {
+  var token = req.get('Authorization')
+  RedisRepository.getAccountInfo(token).then(accountInfo => {
     next();
   }).catch(error => {
     res.json({error: 'serverError'})

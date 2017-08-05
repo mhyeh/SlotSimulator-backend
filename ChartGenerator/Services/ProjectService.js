@@ -12,7 +12,7 @@ let folder    = './'
 
 let getAllProject = function (token) {
   return new Promise((resolve, reject) => {
-    redisRepository.getAccountId(req.get('Authorization')).then(accountId => {
+    redisRepository.getAccountId(token).then(accountId => {
       return projectRepoisitory.getAllProject(accountId)
     }).then(allProject => {
       resolve(allProject)
@@ -29,12 +29,10 @@ let getProjectById = function (token, id) {
       return projectRepoisitory.getProjectById(id)
     }).then(projectInfo => {
       data = projectInfo
-  
       let readFile = {}
       for (let i of fileName) {
-        readFile[i] = fileService.ReadFile(data[i])
+        readFile[i] = fileService.readFile(data[i])
       }
-      
       return Promise.props(readFile)
     }).then(fileContext => {
       for (let i of fileName) {
@@ -49,13 +47,20 @@ let getProjectById = function (token, id) {
 
 let create = function (token, body) {
   let userId
+  let data = {}
+  let id
+  let path
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
+      data = {
+        userId: userId
+      }
 
       for (let i of dataSet) {
         if (body[i] === undefined) {
           reject()
+          return
         } else {
           data[i] = body[i]
         }
@@ -69,22 +74,24 @@ let create = function (token, body) {
         }
       }
 
-      return projectRepoisitory.createProject(userId, data)
+      return projectRepoisitory.createProject(data)
     }).then(() => {
       return projectRepoisitory.getNewestProject(userId)
     }).then(projectInfo => {
-      let path = folder + userId + '/' + projectInfo.id
-  
+      id = projectInfo.id
+      path = folder + userId + '/' + id
+      return fileService.createFolder(path)
+    }).then(() => {
       for (let i of fileName) {
         data[i] = path + '/' + i + extension
       }
-    
+      
       let promise = []
-      promise.push(projectRepoisitory.updateProject(userId, data))
+      promise.push(projectRepoisitory.updateProject(id, data))
       for (let i of fileName) {
         promise.push(fileService.createFile(data[i], body[i]))
       }
-    
+
       Promise.all(promise).then(() => {
         resolve()
       }).catch(error => {
@@ -108,7 +115,8 @@ let update = function (token, id, body) {
   
       for (let i of dataSet) {
         if (body[i] === undefined) {
-          res.json({error: 'serverError'})
+          reject()
+          return
         } else {
           data[i] = body[i]
         }
@@ -116,30 +124,22 @@ let update = function (token, id, body) {
   
       for (let i of fileName) {
         if (body[i] === undefined) {
-          res.json({error: 'serverError'})
+          reject()
+          return
         } else {
           data[i] = path + '/' + i + extension
         }
       }
   
       let promise = []
+      promise.push(projectRepoisitory.updateProject(id, data))
       for (let i of fileName) {
-        promise.push(fileService.deleteFile(data[i], body[i]))
+        promise.push(fileService.createFile(data[i], body[i]))
       }
-  
-      Promise.all(promise).then(() => {
-        let promise = []
-        promise.push(projectRepoisitory.updateProject(id, data))
-        for (let i of fileName) {
-          promise.push(fileService.createFile(data[i], body[i]))
-        }
-      
-        return Promise.all(promise)
-      }).then(() => {
-        resolve()
-      }).catch(error => {
-        reject()
-      })
+    
+      return Promise.all(promise)
+    }).then(() => {
+      resolve()
     }).catch(error => {
       reject()
     })
