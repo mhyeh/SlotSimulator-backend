@@ -39,7 +39,7 @@ let getProjectById = function (token, id) {
         data[i] = fileContext[i]
       }
       resolve(data)
-    }).catch(err => {
+    }).catch(error => {
       reject()
     })
   })
@@ -152,13 +152,13 @@ let deleteProject = function (token, id) {
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
       return projectRepoisitory.deleteProject(id)
-     }).then(() => {
+    }).then(() => {
       return fileService.deleteFolder(folder + userId + '/' + id)
-     }).then(() => {
+    }).then(() => {
       resolve()
-     }).catch(error => {
+    }).catch(error => {
       reject()
-     })
+    })
   })
 }
 

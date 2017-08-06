@@ -1,9 +1,9 @@
 let express      = require('express')
 let path         = require('path')
-let favicon      = require('serve-favicon')
 let logger       = require('morgan')
 let cookieParser = require('cookie-parser')
 let bodyParser   = require('body-parser')
+let favicon      = require('serve-favicon')
 
 let Account = require('./routes/Account')
 let Project = require('./routes/Project')
@@ -29,7 +29,7 @@ app.use('/account', Account)
 app.use((req, res, next) => {
   var token = req.get('Authorization')
   RedisRepository.getAccountInfo(token).then(accountInfo => {
-    next();
+    next()
   }).catch(error => {
     res.json({error: 'serverError'})
   })

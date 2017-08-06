@@ -9,7 +9,7 @@ cache.on('ready', error => {
   console.log('ready')
 })
 
-cache.on("error", error => {
+cache.on('error', error => {
   console.log(error)
 })
 
