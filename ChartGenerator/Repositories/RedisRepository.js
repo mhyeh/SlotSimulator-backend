@@ -42,7 +42,7 @@ let getAccountId = function (token) {
       if (accountId) {
         resolve(accountId)
       } else {
-        reject()
+        reject('token expired')
       }
     })
   })
@@ -55,6 +55,7 @@ let getAccountInfo = function (token) {
     }).then(accountInfo => {
       resolve(accountInfo)
     }).catch(error => {
+      console.log(error)
       reject(error)
     })
   })

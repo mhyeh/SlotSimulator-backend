@@ -13,7 +13,7 @@ let createFile = function (name, context) {
       resolve()
     }).catch(error => {
       console.log(error)
-      reject()
+      reject('file error')
     })
   })
 }
@@ -23,7 +23,8 @@ let deleteFile = function (name) {
     fs.unlinkAsync(path.join(appRoot, name)).then(() => {
       resolve()
     }).catch(error => {
-      reject()
+      console.log(error)
+      reject('file error')
     })
   })
 }
@@ -34,7 +35,7 @@ let readFile = function (name) {
       resolve(context)
     }).catch(error => {
       console.log(error)
-      reject()
+      reject('file error')
     })
   })
 }
@@ -45,7 +46,7 @@ let createFolder = function (name) {
       resolve()
     }).catch(error => {
       console.log(error)
-      reject()
+      reject('file error')
     })
   })
 }
@@ -55,7 +56,8 @@ let deleteFolder = function (path) {
     rimraf(path).then(() => {
       resolve()
     }).catch(error => {
-      reject()
+      console.log(error)
+      reject('file error')
     })
   })
 }

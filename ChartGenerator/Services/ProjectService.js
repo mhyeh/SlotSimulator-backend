@@ -2,7 +2,9 @@ let Promise = require('bluebird')
 
 let redisRepository    = require('../Repositories/RedisRepository')
 let projectRepoisitory = require('../Repositories/ProjectRepository')
-let fileService        = require('./FileService')
+
+let fileService     = require('./FileService')
+let errorMsgService = require('./ErrorMsgService')
 
 let dataSet  = ['name', 'block', 'thread', 'runTime', 'symbol', 'reels', 'rows', 'betCost']
 let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr']
@@ -17,7 +19,11 @@ let getAllProject = function (token) {
     }).then(allProject => {
       resolve(allProject)
     }).catch(error => {
-      reject()
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else {
+        reject(errorMsgService.serverError)
+      }
     })
   })
 }
@@ -40,7 +46,13 @@ let getProjectById = function (token, id) {
       }
       resolve(data)
     }).catch(error => {
-      reject()
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
     })
   })
 }
@@ -59,7 +71,7 @@ let create = function (token, body) {
 
       for (let i of dataSet) {
         if (body[i] === undefined) {
-          reject()
+          reject(errorMsgService.emptyInput)
           return
         } else {
           data[i] = body[i]
@@ -68,7 +80,7 @@ let create = function (token, body) {
 
       for (let i of fileName) {
         if (body[i] === undefined) {
-          reject()
+          reject(errorMsgService.emptyInput)
         } else {
           data[i] = './'
         }
@@ -92,13 +104,17 @@ let create = function (token, body) {
         promise.push(fileService.createFile(data[i], body[i]))
       }
 
-      Promise.all(promise).then(() => {
-        resolve()
-      }).catch(error => {
-        reject()
-      })
+      return Promise.all(promise)
+    }).then(() => {
+      resolve()
     }).catch(error => {
-      reject()
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
     })
   })
 }
@@ -115,7 +131,7 @@ let update = function (token, id, body) {
   
       for (let i of dataSet) {
         if (body[i] === undefined) {
-          reject()
+          reject(errorMsgService.emptyInput)
           return
         } else {
           data[i] = body[i]
@@ -124,7 +140,7 @@ let update = function (token, id, body) {
   
       for (let i of fileName) {
         if (body[i] === undefined) {
-          reject()
+          reject(errorMsgService.emptyInput)
           return
         } else {
           data[i] = path + '/' + i + extension
@@ -141,7 +157,13 @@ let update = function (token, id, body) {
     }).then(() => {
       resolve()
     }).catch(error => {
-      reject()
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
     })
   })
 }
@@ -157,7 +179,13 @@ let deleteProject = function (token, id) {
     }).then(() => {
       resolve()
     }).catch(error => {
-      reject()
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
     })
   })
 }
