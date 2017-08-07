@@ -1,6 +1,7 @@
 var Promise = require('bluebird')
-var AccountRepository = require('./AccountRepository')
 var redis = Promise.promisifyAll(require('redis'))
+
+var accountRepository = require('./AccountRepository')
 
 var existTime = 60 * 30
 var cache = redis.createClient()
@@ -51,7 +52,7 @@ let getAccountId = function (token) {
 let getAccountInfo = function (token) {
   return new Promise((resolve, reject) => {
     getAccountId(token).then(accountId => {
-      return AccountRepository.getAccountById(accountId)
+      return accountRepository.getAccountById(accountId)
     }).then(accountInfo => {
       resolve(accountInfo)
     }).catch(error => {
