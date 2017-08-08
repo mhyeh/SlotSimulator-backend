@@ -101,7 +101,7 @@ let update = function (token, updateData) {
         return
       } 
       
-      updateData.newName     = ((updateData.newName != undefined) ? updateData.newName : userData.newName)
+      updateData.newName     = ((updateData.newName != undefined) ? updateData.newName : userData.name)
       updateData.newPassword = ((updateData.newPassword != undefined && updateData.newCheckPassword != undefined &&
                                  updateData.newPassword === updateData.newCheckPassword) ? 
         bcrypt.hashSync(updateData.newPassword) : userData.password)

@@ -44,6 +44,8 @@ let getAccountId = function (token) {
       } else {
         reject('token expired')
       }
+    }).catch(error => {
+      reject('token expired')
     })
   })
 }
