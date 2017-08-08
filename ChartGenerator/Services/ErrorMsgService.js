@@ -7,5 +7,6 @@ module.exports = {
   emptyInput:    {error: "empty input",                code: 301},
   serverError:   {error: "server error",               code: 401},
   projectUsed:   {error: "project has been used",      code: 501},
+  noProjectType: {error: "can not find project type",  code: 502},
   fsError:       {error: "can not read or write file", code: 601}
 }

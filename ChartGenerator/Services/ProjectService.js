@@ -1,12 +1,13 @@
 let Promise = require('bluebird')
 
-let redisRepository    = require('../Repositories/RedisRepository')
-let projectRepoisitory = require('../Repositories/ProjectRepository')
+let redisRepository       = require('../Repositories/RedisRepository')
+let projectRepoisitory    = require('../Repositories/ProjectRepository')
+let projectTypeRepository = require('../Repositories/ProjectTypeRepository')
 
 let fileService     = require('./FileService')
 let errorMsgService = require('./ErrorMsgService')
 
-let dataSet  = ['name', 'block', 'thread', 'runTime', 'symbol', 'reels', 'rows', 'betCost']
+let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'symbol', 'reels', 'rows', 'betCost']
 let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr']
 
 let extension = '.csv'
@@ -85,7 +86,8 @@ let create = function (token, body) {
           data[i] = './'
         }
       }
-
+      return projectTypeRepository.getTypeById(data.typeId)
+    }),then(() => {
       return projectRepoisitory.createProject(data)
     }).then(() => {
       return projectRepoisitory.getNewestProject(userId)
@@ -110,6 +112,8 @@ let create = function (token, body) {
     }).catch(error => {
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
+      } else if (error === 'Project type error') {
+        reject(errorMsgService.noProjectType)
       } else if (error === 'file error') {
         reject(errorMsgService.fsError)
       } else {
@@ -120,12 +124,13 @@ let create = function (token, body) {
 }
 
 let update = function (token, id, body) {
+  let data
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let userId = accountId
       let path   = folder + userId + '/' + id
   
-      let data = {
+      data = {
         userId: userId
       }
   
@@ -146,7 +151,9 @@ let update = function (token, id, body) {
           data[i] = path + '/' + i + extension
         }
       }
-  
+      
+      return projectTypeRepository.getTypeById(data.typeId)
+    }),then(() => {
       let promise = []
       promise.push(projectRepoisitory.updateProject(id, data))
       for (let i of fileName) {
