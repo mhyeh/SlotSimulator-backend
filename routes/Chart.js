@@ -1,32 +1,31 @@
 let express = require('express')
 
-let dataRepoisitory = require('../ChartGenerator/Repositories/DataRepository')
+let chartService = require('../ChartGenerator/Services/ChartService')
 
 let router = express.Router()
 
-router.get('/rtp', (req, res, next) => {
-  let request = req.query
-
-  dataRepoisitory.getRTP(request).then(result => {
+router.get('/:id/rtp', (req, res, next) => {
+  chartService.getRTP(req.get('Authorization'), req.params.id, req.query).then(result => {
     res.json(result)
+  }).catch(() => {
+    res.json({error: 'serverError'})
   })
 })
 
-router.get('/totalNetWin', (req, res, next) => {
-  let request = req.query
-
-  dataRepoisitory.getTotalNetWin(request).then(result => {
+router.get('/:id/totalNetWin', (req, res, next) => {
+  chartService.getTotalNetWin(req.get('Authorization'), req.params.id, req.query).then(result => {
     res.json(result)
+  }).catch(() => {
+    res.json({error: 'serverError'})
   })
 })
 
-router.get('/survivalRate', (req, res, next) => {
-  let request = req.query
-  
-  dataRepoisitory.getSurvivalRate(request).then(result => {
+router.get('/:id/survivalRate', (req, res, next) => {
+  chartService.getSurvivalRate(req.get('Authorization'), req.params.id, req.query).then(result => {
     res.json(result)
+  }).catch(() => {
+    res.json({error: 'serverError'})
   })
 })
-
 
 module.exports = router

@@ -1,6 +1,6 @@
 let Promise = require('bluebird')
 
-let getRTP = function (request) {
+let getRTP = function (projectId, request) {
   let size  = request.size
   let step  = request.step
   let range = request.range
@@ -10,7 +10,7 @@ let getRTP = function (request) {
   })
 }
 
-let getTotalNetWin = function (request) {
+let getTotalNetWin = function (projectId, request) {
   let size  = request.size
   let range = request.range
 
@@ -19,7 +19,7 @@ let getTotalNetWin = function (request) {
   })
 }
 
-let getSurvivalRate = function (request) {
+let getSurvivalRate = function (projectId, request) {
   let handle     = request.handle
   let bet        = request.bet
   let lowerBound = request.lowerBound

@@ -1,15 +1,15 @@
 let Promise = require('bluebird')
 let bcrypt  = require('bcrypt-nodejs')
 
-let AccountRepository = require('../Repositories/AccountRepository')
-let RedisRepository   = require('../Repositories/RedisRepository')
+let accountRepository = require('../Repositories/AccountRepository')
+let redisRepository   = require('../Repositories/RedisRepository')
 
 let errorMsgService = require('./ErrorMsgService')
 
 let getUnusedToken = function () {
   let token = bcrypt.genSaltSync(40).toString('base64').substr(7, 20)
   return new Promise((resolve, reject) => {
-    RedisRepository.getAccountId(token).then(accountId => {
+    redisRepository.getAccountId(token).then(accountId => {
       getUnusedToken().then(resolve)
     }).catch(() => {
       resolve(token)
@@ -20,7 +20,7 @@ let getUnusedToken = function () {
 let createToken = function (accountId) {
   return new Promise((resolve, reject) => {
     getUnusedToken().then(token => {
-      RedisRepository.checkAccount(token, accountId)
+      redisRepository.checkAccount(token, accountId)
       resolve(token)
     }).catch(error => {
       reject(errorMsgService.serverError)
@@ -35,7 +35,7 @@ let login = function (user) {
       return
     }
       
-    AccountRepository.getPassword(user.account).then(password => {
+    accountRepository.getPassword(user.account).then(password => {
       if (password === '') {
         reject(errorMsgService.accountError)
         return
@@ -44,7 +44,7 @@ let login = function (user) {
         reject(errorMsgService.pwdError)
         return
       } else {
-        return AccountRepository.getAccount(user.account)
+        return accountRepository.getAccount(user.account)
       }
     }).then(accountInfo => {
       return createToken(accountInfo.id)
@@ -66,15 +66,15 @@ let register = function (user) {
     
     let hsahPassword = bcrypt.hashSync(user.password)
   
-    AccountRepository.getPassword(user.account).then(password => {
+    accountRepository.getPassword(user.account).then(password => {
       if (password != '') {
         reject(errorMsgService.accountUsed)
         return
       } 
       
-      return AccountRepository.createAccount(user.account, hsahPassword, user.name)
+      return accountRepository.createAccount(user.account, hsahPassword, user.name)
     }).then(() => {
-      return AccountRepository.getAccount(user.account)
+      return accountRepository.getAccount(user.account)
     }).then(accountInfo => {
       return createToken(accountInfo.id)
     }).then(token => {
@@ -88,8 +88,8 @@ let register = function (user) {
 let update = function (token, updateData) {
   return new Promise((resolve, reject) => {
     let userData = {}
-    RedisRepository.getAccountId(token).then(accountId => {
-      return AccountRepository.getAccountById(accountId)
+    redisRepository.getAccountId(token).then(accountId => {
+      return accountRepository.getAccountById(accountId)
     }).then((accountInfo) => {
       userData = accountInfo
       if (updateData.password === undefined) {
@@ -106,9 +106,9 @@ let update = function (token, updateData) {
                                  updateData.newPassword === updateData.newCheckPassword) ? 
         bcrypt.hashSync(updateData.newPassword) : userData.password)
 
-      return AccountRepository.updateAccount(userData.id, updateData.newPassword, updateData.newName)
+      return accountRepository.updateAccount(userData.id, updateData.newPassword, updateData.newName)
     }).then(() => {
-      RedisRepository.set(token, userData.id)
+      redisRepository.set(token, userData.id)
       resolve(token)
     }).catch(error => {
       if (error === 'token expired') {
@@ -125,7 +125,7 @@ let checkAccount = function (account) {
     if (account === undefined) {
       reject(errorMsgService.emptyInput)
     } else {
-      AccountRepository.getPassword(account).then(password => {
+      accountRepository.getPassword(account).then(password => {
         if (password === '') {
           resolve()
         } else {
@@ -140,8 +140,8 @@ let checkAccount = function (account) {
 
 let getAccount = function (token) {
   return new Promise((resolve, reject) => {
-    RedisRepository.getAccountId(token).then(accountId => {
-      return AccountRepository.getAccountById(accountId)
+    redisRepository.getAccountId(token).then(accountId => {
+      return accountRepository.getAccountById(accountId)
     }).then(accountInfo => {
       resolve(accountInfo)
     }).catch(error => {
