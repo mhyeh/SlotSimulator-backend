@@ -11,7 +11,7 @@ let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'symbol', 'reels
 let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr']
 
 let extension = '.csv'
-let folder    = './'
+let folder    = './userProject/'
 
 let getAllProject = function (token) {
   return new Promise((resolve, reject) => {
@@ -82,12 +82,13 @@ let create = function (token, body) {
       for (let i of fileName) {
         if (body[i] === undefined) {
           reject(errorMsgService.emptyInput)
+          return
         } else {
           data[i] = './'
         }
       }
       return projectTypeRepository.getTypeById(data.typeId)
-    }),then(() => {
+    }).then(() => {
       return projectRepoisitory.createProject(data)
     }).then(() => {
       return projectRepoisitory.getNewestProject(userId)
@@ -153,7 +154,7 @@ let update = function (token, id, body) {
       }
       
       return projectTypeRepository.getTypeById(data.typeId)
-    }),then(() => {
+    }).then(() => {
       let promise = []
       promise.push(projectRepoisitory.updateProject(id, data))
       for (let i of fileName) {

@@ -46,6 +46,11 @@ let getNewestProject = function (userid) {
 let createProject = function (request) {
   return new Promise((resolve, reject) => {
     model.knex('project').insert(request).then(() => {
+      return getNewestProject(request.userId)
+    }).then(project => {
+      return model.knex.raw('create table overall? (id int auto_increment primary key, netWin int, triger int)', 
+        [project.id])
+    }).then(() => {
       resolve()
     }).catch(error => {
       console.log(error)
@@ -68,6 +73,8 @@ let updateProject = function (id, request) {
 let deleteProject = function (id) {
   return new Promise((resolve, reject) => {
     model.knex('project').where('id', id).del().then(() => {
+      return model.knex.schema.dropTable('overall' + id)
+    }).then(() => {
       resolve()
     }).catch(error => {
       console.log(error)

@@ -11,6 +11,8 @@ let Chart   = require('./routes/Chart')
 
 let RedisRepository = require('./ChartGenerator/Repositories/RedisRepository')
 
+let errorMsgService = require('./ChartGenerator/Services/ErrorMsgService')
+
 let app = express()
 
 // view engine setup
@@ -31,7 +33,7 @@ app.use((req, res, next) => {
   RedisRepository.getAccountInfo(token).then(accountInfo => {
     next()
   }).catch(error => {
-    res.json({error: 'serverError'})
+    res.status(400).json(errorMsgService.tokenExpired)
   })
 })
 
