@@ -48,24 +48,20 @@ let getOverAll = function (projectId, request) {
 
 let getBaseGame = function (projectId, request) {
   return new Promise((resolve, reject) => {
-    return new Promise((resolve, reject) => {
-      calPayOutDistribution(1, projectId, request).then(result => {
-        resolve(result)
-      }).catch(() => {
-        reject()
-      })
+    calPayOutDistribution(1, projectId, request).then(result => {
+      resolve(result)
+    }).catch(() => {
+      reject()
     })
   })
 }
 
 let getFreeGame = function (projectId, request) {
   return new Promise((resolve, reject) => {
-    return new Promise((resolve, reject) => {
-      calPayOutDistribution(2, projectId, request).then(result => {
-        resolve(result)
-      }).catch(() => {
-        reject()
-      })
+    calPayOutDistribution(2, projectId, request).then(result => {
+      resolve(result)
+    }).catch(() => {
+      reject()
     })
   })
 }
@@ -79,20 +75,20 @@ let getRTP = function (projectId, request) {
 
     let result = new Map()
     model.knex('overall' + projectId)
-    .select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', 
-      [betCost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc').then(rtpSet => {
-      for (let rtp of rtpSet) {
-        let tmp = Math.floor(rtp.rtp / range)
-        while (tmp >= result.size) {
-          result.set(range * result.size, 0)
+      .select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', 
+        [betCost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc').then(rtpSet => {
+        for (let rtp of rtpSet) {
+          let tmp = Math.floor(rtp.rtp / range)
+          while (tmp >= result.size) {
+            result.set(range * result.size, 0)
+          }
+          result.set(range * tmp, result.get(range * tmp) + 1)
         }
-        result.set(range * tmp, result.get(range * tmp) + 1)
-      }
-      resolve(mapify.demapify(result))
-    }).catch(error => {
-      console.log(error)
-      reject()
-    })
+        resolve(mapify.demapify(result))
+      }).catch(error => {
+        console.log(error)
+        reject()
+      })
   })
 }
 
@@ -100,7 +96,6 @@ let getTotalNetWin = function (projectId, request) {
   return new Promise((resolve, reject) => {
     let size    = request.size
     let range   = request.range
-    let betCost = request.betCost
 
     let result = new Map()
     result.set(0, 0)
