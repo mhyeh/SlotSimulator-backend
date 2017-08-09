@@ -1,5 +1,4 @@
 let config = require('../config/database')
-
 let knex = require('knex')({
   client: 'mysql',
   connection: config.dev,
