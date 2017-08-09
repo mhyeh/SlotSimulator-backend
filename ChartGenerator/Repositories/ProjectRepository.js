@@ -48,8 +48,13 @@ let createProject = function (request) {
     model.knex('project').insert(request).then(() => {
       return getNewestProject(request.userId)
     }).then(project => {
-      return model.knex.raw('create table overall? (id int auto_increment primary key, netWin int, triger int)', 
-        [project.id])
+      let promise = []
+      promise.push(model.knex.raw('create table overall? (id int auto_increment primary key, netWin int, triger int)', [project.id]))
+      promise.push(model.knex.raw('create table basegame? (id int auto_increment primary key, netWin int)', [project.id]))
+      promise.push(model.knex.raw('create table freegame? (id int auto_increment primary key, netWin int)', [project.id]))
+      promise.push(model.knex.raw('create table survivalrate? (id int auto_increment primary key, hand int, isSurvival int)', [project.id]))
+      
+      return Promise.all(promise)
     }).then(() => {
       resolve()
     }).catch(error => {
@@ -73,7 +78,13 @@ let updateProject = function (id, request) {
 let deleteProject = function (id) {
   return new Promise((resolve, reject) => {
     model.knex('project').where('id', id).del().then(() => {
-      return model.knex.schema.dropTable('overall' + id)
+      let promise = []
+      promise.push(model.knex.schema.dropTable('overall'      + id))
+      promise.push(model.knex.schema.dropTable('basegame'     + id))
+      promise.push(model.knex.schema.dropTable('freegame'     + id))
+      promise.push(model.knex.schema.dropTable('survivalrate' + id))
+
+      return Promise.all(promise)
     }).then(() => {
       resolve()
     }).catch(error => {

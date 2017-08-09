@@ -8,7 +8,7 @@ let errorMsgService = require('./ErrorMsgService')
 let getOverAll = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.distribution === undefined || request.betCost === undefined) {
+      if(request.size === undefined || request.distribution === undefined) {
         reject(errorMsgService.emptyInput)
         return
       }
@@ -24,7 +24,7 @@ let getOverAll = function (token, projectId, request) {
 let getBaseGame = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.distribution === undefined || request.betCost === undefined) {
+      if(request.size === undefined || request.distribution === undefined) {
         reject(errorMsgService.emptyInput)
         return
       }
@@ -56,8 +56,7 @@ let getFreeGame = function (token, projectId, request) {
 let getRTP = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
-      if(request.size  === undefined || request.step    === undefined || 
-         request.range === undefined || request.betCost === undefined) {
+      if(request.size === undefined || request.step === undefined || request.range === undefined) {
         reject(errorMsgService.emptyInput)
         return
       }
@@ -73,7 +72,7 @@ let getRTP = function (token, projectId, request) {
 let getTotalNetWin = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.range === undefined || request.betCost === undefined) {
+      if(request.size === undefined || request.range === undefined) {
         reject(errorMsgService.emptyInput)
         return
       }
