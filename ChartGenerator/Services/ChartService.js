@@ -40,7 +40,7 @@ let getBaseGame = function (token, projectId, request) {
 let getFreeGame = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.distribution === undefined || request.betCost === undefined) {
+      if(request.size === undefined || request.distribution === undefined) {
         reject(errorMsgService.emptyInput)
         return
       }
