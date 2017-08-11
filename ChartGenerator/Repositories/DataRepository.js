@@ -116,15 +116,15 @@ let getTotalNetWin = function (projectId, request) {
           netWin += row.netWin
         } else {
           let tmp = Math.floor(netWin / range)
-          while (tmp < min || tmp > max) {
-            if (tmp < min) {
-              result.set((--min) * range, 0)
-            } else {
-              result.set((++max) * range, 0)
-            }
-          }
+          // while (tmp < min || tmp > max) {
+          //   if (tmp < min) {
+          //     result.set((--min) * range, 0)
+          //   } else {
+          //     result.set((++max) * range, 0)
+          //   }
+          // }
           netWin = 0
-          result.set(range * tmp, result.get(range * tmp) + 1)
+          result.set(range * tmp, ((result.get(range * tmp) === undefined) ? 0 : result.get(range * tmp) + 1))
         }
       }
       resolve(mapify.demapify(result))
