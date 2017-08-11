@@ -23,7 +23,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   
   return new Promise((resolve, reject) => {
     projectRepository.getProjectById(projectId).then(project => {
-      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut', [project.betcost])).where('id', '<=', size).orderBy('payOut', 'asc')
+      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut', [project.betCost])).where('id', '<=', size).orderBy('payOut', 'asc')
     }).then(rows => {
       let i = 0
       
@@ -80,7 +80,8 @@ let getRTP = function (projectId, request) {
     let result = new Map()
 
     projectRepository.getProjectById(projectId).then(project => {
-      return model.knex('overall' + projectId).select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betcost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
+      console.log(project.betcost)
+      return model.knex('overall' + projectId).select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
       for (let rtp of rtpSet) {
         let tmp = Math.floor(rtp.rtp / range)
