@@ -12,17 +12,17 @@ router.get('/', (req, res, next) => {
   })
 })
 
-router.get('/:id', (req, res, next) => {
-  projectService.getProjectById(req.get('Authorization'), req.params.id).then(project => {
-    res.status(200).json(project)
+router.get('/type/:id', (req, res, next) => {
+  projectService.getProjectType(req.get('Authorization'), req.params.id).then(type => {
+    res.status(200).json(type)
   }).catch(error => {
     res.status(400).json(error)
   })
 })
 
-router.get('/type/:id', (req, res, next) => {
-  projectService.getProjectType(req.get('Authorization'), req.params.id).then(type => {
-    res.status(200).json(type)
+router.get('/:id', (req, res, next) => {
+  projectService.getProjectById(req.get('Authorization'), req.params.id).then(project => {
+    res.status(200).json(project)
   }).catch(error => {
     res.status(400).json(error)
   })
