@@ -80,11 +80,10 @@ let getRTP = function (projectId, request) {
     let result = new Map()
 
     projectRepository.getProjectById(projectId).then(project => {
-      console.log(project.betcost)
-      return model.knex.raw('select `rtp`, count(*) `count` from (select ((sum(`netWin`) + ?) / ?) `rtp`, floor((`id` - 1) / ?) `group` from `overall?` where `id` <= ? group by `group`) `result` group by `rtp`', [project.betCost * step, step, step, projectId])
+      return model.knex.raw('select `rtp`, count(*) `count` from (select ((sum(`netWin`) + ?) / ?) `rtp`, floor((`id` - 1) / ?) `group` from `overall' + projectId + '` where `id` <= ? group by `group`) `result` group by `rtp` order by `rtp` asc', [project.betCost * step, step, step, size])
       // return model.knex.select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).from('overall' + projectId).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
-      for (let rtp of rtpSet) {
+      for (let rtp of rtpSet[0]) {
         let tmp = Math.floor(rtp.rtp / range)
         while (tmp >= result.size) {
           result.set(range * result.size, 0)
