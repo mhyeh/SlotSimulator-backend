@@ -20,6 +20,14 @@ router.get('/:id', (req, res, next) => {
   })
 })
 
+router.get('/type/:id', (req, res, next) => {
+  projectService.getProjectType(req.get('Authorization'), req.params.id).then(type => {
+    res.status(200).json(type)
+  }).catch(error => {
+    res.status(400).json(error)
+  })
+})
+
 router.post('/', (req, res, next) => {
   projectService.create(req.get('Authorization'), req.body).then(() => {
     res.status(200).json({message: 'success'})

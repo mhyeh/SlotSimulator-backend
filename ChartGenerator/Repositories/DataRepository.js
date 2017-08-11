@@ -81,7 +81,7 @@ let getRTP = function (projectId, request) {
 
     projectRepository.getProjectById(projectId).then(project => {
       console.log(project.betcost)
-      return model.knex('overall' + projectId).select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
+      return model.knex('overall' + projectId).select(model.knex.raw('(avg(`netWin` + ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
       for (let rtp of rtpSet) {
         let tmp = Math.floor(rtp.rtp / range)
@@ -116,15 +116,15 @@ let getTotalNetWin = function (projectId, request) {
           netWin += row.netWin
         } else {
           let tmp = Math.floor(netWin / range)
-          // while (tmp < min || tmp > max) {
-          //   if (tmp < min) {
-          //     result.set((--min) * range, 0)
-          //   } else {
-          //     result.set((++max) * range, 0)
-          //   }
-          // }
+          while (tmp < min || tmp > max) {
+            if (tmp < min) {
+              result.set((--min) * range, 0)
+            } else {
+              result.set((++max) * range, 0)
+            }
+          }
           netWin = 0
-          result.set(range * tmp, ((result.get(range * tmp) === undefined) ? 0 : result.get(range * tmp) + 1))
+          result.set(range * tmp, result.get(range * tmp) + 1)
         }
       }
       resolve(mapify.demapify(result))
