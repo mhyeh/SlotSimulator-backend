@@ -81,7 +81,7 @@ let getRTP = function (projectId, request) {
 
     projectRepository.getProjectById(projectId).then(project => {
       console.log(project.betcost)
-      return model.knex('overall' + projectId).select(model.knex.raw('(avg(`netWin` + ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
+      return model.knex('overall' + projectId).select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
       for (let rtp of rtpSet) {
         let tmp = Math.floor(rtp.rtp / range)
