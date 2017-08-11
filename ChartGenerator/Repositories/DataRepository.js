@@ -23,14 +23,14 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   
   return new Promise((resolve, reject) => {
     projectRepository.getProjectById(projectId).then(project => {
-      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut', [project.betCost])).where('id', '<=', size).orderBy('payOut', 'asc')
+      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
     }).then(rows => {
       let i = 0
       
       for (let row of rows) {
         while (key[i++] < row.payOut) {}
         i--
-        result.set(key[i], result.get(key[i]) + 1)
+        result.set(key[i], result.get(key[i]) + row.count)
       }
 
       resolve(mapify.demapify(result))
@@ -81,14 +81,15 @@ let getRTP = function (projectId, request) {
 
     projectRepository.getProjectById(projectId).then(project => {
       console.log(project.betcost)
-      return model.knex('overall' + projectId).select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
+      return model.knex.raw('select `rtp`, count(*) `count` from (select ((sum(`netWin`) + ?) / ?) `rtp`, floor((`id` - 1) / ?) `group` from `overall?` where `id` <= ? group by `group`) `result` group by `rtp`', [project.betCost * step, step, step, projectId])
+      // return model.knex.select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).from('overall' + projectId).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
       for (let rtp of rtpSet) {
         let tmp = Math.floor(rtp.rtp / range)
         while (tmp >= result.size) {
           result.set(range * result.size, 0)
         }
-        result.set(range * tmp, result.get(range * tmp) + 1)
+        result.set(range * tmp, result.get(range * tmp) + rtp.count)
       }
       resolve(mapify.demapify(result))
     }).catch(error => {
