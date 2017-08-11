@@ -4,6 +4,7 @@ let logger       = require('morgan')
 let cookieParser = require('cookie-parser')
 let bodyParser   = require('body-parser')
 let favicon      = require('serve-favicon')
+let cors         = require('cors')
 
 let Account = require('./routes/Account')
 let Project = require('./routes/Project')
@@ -22,14 +23,16 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-
+/*
 app.use((req, res, next) => {
   res.set({'Access-Control-Allow-Origin':  '*',
-           'Access-Control-Allow-Headers': 'Content-Type,Authorization' 
+           'Access-Control-Allow-Headers': 'Content-Type,authorization' 
   })
 
   next()
-})
+})*/
+
+app.use(cors())
 
 app.use('/account', Account)
 
