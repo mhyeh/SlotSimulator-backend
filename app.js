@@ -9,6 +9,7 @@ let cors         = require('cors')
 let Account = require('./routes/Account')
 let Project = require('./routes/Project')
 let Chart   = require('./routes/Chart')
+let Table   = require('./routes/Table')
 
 let RedisRepository = require('./ChartGenerator/Repositories/RedisRepository')
 
@@ -46,7 +47,8 @@ app.use((req, res, next) => {
 })
 
 app.use('/project', Project)
-app.use('/chart', Chart)
+app.use('/chart',   Chart)
+app.use('/table',   Table)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
