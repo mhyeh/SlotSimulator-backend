@@ -136,14 +136,14 @@ let getTotalNetWin = function (projectId, request) {
 }
 
 let getSurvivalRate = function (projectId, request) {
-  let handle     = request.handle
-  let bet        = request.bet
-  let lowerBound = request.lowerBound
-  let upperBound = request.upperBound
-  let round      = request.round
-
   return new Promise((resolve, reject) => {
-    let result = {}
+    let size = request.size
+    model.knex('survivalrate' + projectId).select().where('id', '<=', size).then(rows => {
+      resolve(rows)
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
   })
 }
 
