@@ -84,11 +84,11 @@ let getRTP = function (projectId, request) {
       // return model.knex.select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).from('overall' + projectId).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
       for (let rtp of rtpSet[0]) {
-        let tmp = Math.floor(rtp.rtp / range)
+        let tmp = Math.floor(rtp.rtp * 100 / range)
         while (tmp >= result.size) {
-          result.set(range * result.size, 0)
+          result.set(result.size * result.size / 100, 0)
         }
-        result.set(range * tmp, result.get(range * tmp) + rtp.count)
+        result.set(tmp * range / 100, result.get(tmp * range / 100) + rtp.count)
       }
       resolve(mapify.demapify(result))
     }).catch(error => {
