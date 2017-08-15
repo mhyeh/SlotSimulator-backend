@@ -80,15 +80,16 @@ let getRTP = function (projectId, request) {
     let result = new Map()
 
     projectRepository.getProjectById(projectId).then(project => {
-      return model.knex.raw('select `rtp`, count(*) `count` from (select ((sum(`netWin`) + ?) / ?) `rtp`, floor((`id` - 1) / ?) `group` from `overall' + projectId + '` where `id` <= ? group by `group`) `result` group by `rtp` order by `rtp` asc', [project.betCost * step, step, step, size])
+      return model.knex.raw('select `rtp`, count(*) `count` from (select ((sum(`netWin`) + ?) / ?) `rtp`, floor((`id` - 1) / ?) `group` from `overall' + projectId + '` where `id` <= ? group by `group`) `result` group by `rtp` order by `rtp` asc', [project.betCost * step, project.betCost * step, step, size])
       // return model.knex.select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).from('overall' + projectId).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
+      let num = 0
       for (let rtp of rtpSet[0]) {
-        let tmp = Math.floor(rtp.rtp / range)
+        let tmp = Math.floor(rtp.rtp * 100 / range)
         while (tmp >= result.size) {
-          result.set(range * result.size, 0)
+          result.set(result.size * range / 100, 0)
         }
-        result.set(range * tmp, result.get(range * tmp) + rtp.count)
+        result.set(tmp * range / 100, result.get(tmp * range / 100) + rtp.count)
       }
       resolve(mapify.demapify(result))
     }).catch(error => {
