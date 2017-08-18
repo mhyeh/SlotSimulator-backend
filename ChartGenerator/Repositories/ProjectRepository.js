@@ -52,7 +52,7 @@ let createProject = function (request) {
       promise.push(model.knex.raw('create table overall? (id int auto_increment primary key, netWin int, triger int)', [project.id]))
       promise.push(model.knex.raw('create table basegame? (id int auto_increment primary key, netWin int)', [project.id]))
       promise.push(model.knex.raw('create table freegame? (id int auto_increment primary key, netWin int)', [project.id]))
-      promise.push(model.knex.raw('create table survivalrate? (id int auto_increment primary key, hand int, isSurvival int)', [project.id]))
+      promise.push(model.knex.raw('create table survivalrate? (id int auto_increment primary key, hand int, isSurvival text)', [project.id]))
       
       return Promise.all(promise)
     }).then(() => {
