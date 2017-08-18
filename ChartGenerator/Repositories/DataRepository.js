@@ -117,25 +117,24 @@ let getRTP = function (projectId, request) {
       let sum   = 0
       let count = 0
 
-      let q1  = Math.ceil(size / 4)
-      let mid = Math.ceil(size / 2)
-      let q3  = Math.ceil(size * 3 / 4)
+      let q1  = Math.ceil(size / step / 4)
+      let mid = Math.ceil(size / step / 2)
+      let q3  = Math.ceil(size / step * 3 / 4)
 
       let q1Flag  = true
       let midFlag = true
       let q3Flag  = true
 
       let tableData = {
-        min: rows[0].payOut,
-        max: rows[rows.length - 1].payOut
+        min: Math.floor(rtpSet[0][0].rtp * 100 / range) * range / 100,
+        max: Math.floor(rtpSet[0][rtpSet[0].length - 1].rtp * 100 / range) * range / 100
       }
 
       for (let rtp of rtpSet[0]) {
         let tmp = Math.floor(rtp.rtp * 100 / range)
-
         count += rtp.count
         sum = Math.round(sum + tmp * range / 100 * rtp.count)
-
+        
         if (q1Flag && count > q1) {
           tableData.q1 = tmp * range / 100
           q1Flag = false
@@ -148,12 +147,12 @@ let getRTP = function (projectId, request) {
         }
 
         while (tmp >= result.size) {
-          result.set(result.size * result.size / 100, 0)
+          result.set(result.size * range / 100, 0)
         }
         result.set(tmp * range / 100, result.get(tmp * range / 100) + rtp.count)
       }
 
-      tableData.avg = Math.floor(sum / size * 100) / 100
+      tableData.avg = Math.floor(sum * step * 100 / size) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
     }).catch(error => {
