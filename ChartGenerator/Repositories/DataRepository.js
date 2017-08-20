@@ -53,10 +53,12 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         if (q1Flag && count > q1) {
           tableData.q1 = key[i]
           q1Flag = false
-        } else if (midFlag && count > mid) {
+        }
+        if (midFlag && count > mid) {
           tableData.mid = key[i]
           midFlag = false
-        } else if (q3Flag && count > q3) {
+        }
+        if (q3Flag && count > q3) {
           tableData.q3 = key[i]
           q3Flag = false
         }
@@ -141,10 +143,12 @@ let getRTP = function (projectId, request) {
         if (q1Flag && count > q1) {
           tableData.q1 = tmp * range / 100
           q1Flag = false
-        } else if (midFlag && count > mid) {
+        }
+        if (midFlag && count > mid) {
           tableData.mid = tmp * range / 100
           midFlag = false
-        } else if (q3Flag && count > q3) {
+        }
+        if (q3Flag && count > q3) {
           tableData.q3 = tmp * range / 100
           q3Flag = false
         }
