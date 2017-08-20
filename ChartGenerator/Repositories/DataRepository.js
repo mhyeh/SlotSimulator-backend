@@ -37,30 +37,33 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
       let q3Flag  = true
 
       let tableData = {
-        min: rows[0].payOut,
-        max: rows[rows.length - 1].payOut
+        min: 0,
+        max: 0
       }
 
       let i = 0
       for (let row of rows) {
-        count += row.count
-        sum = Math.round(sum + row.payOut * row.count)
-
-        if (q1Flag && count > q1) {
-          tableData.q1 = row.payOut
-          q1Flag = false
-        } else if (midFlag && count > mid) {
-          tableData.mid = row.payOut
-          midFlag = false
-        } else if (q3Flag && count > q3) {
-          tableData.q3 = row.payOut
-          q3Flag = false
-        }
-
         while (key[i++] < row.payOut) {}
         i--
         result.set(key[i], result.get(key[i]) + row.count)
+
+        count += row.count
+        sum = Math.round(sum + key[i] * row.count)
+
+        if (q1Flag && count > q1) {
+          tableData.q1 = key[i]
+          q1Flag = false
+        } else if (midFlag && count > mid) {
+          tableData.mid = key[i]
+          midFlag = false
+        } else if (q3Flag && count > q3) {
+          tableData.q3 = key[i]
+          q3Flag = false
+        }
       }
+
+      tableData.min = key[0]
+      tableData.max = key[i]
 
       tableData.avg = Math.floor(sum / size * 100) / 100
 
