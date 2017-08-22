@@ -8,14 +8,11 @@ let errorMsgService = require('./ErrorMsgService')
 let extension = '.csv'
 let folder    = './userProject/'
 
-let getOverAll = function (token, id) {
+let getOverAllSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      let promise = {}
-      promise.simulation = fileService.readFile(path + 'overAll'       + extension)
-      promise.theory     = fileService.readFile(path + 'overAllTheory' + extension)
-      return Promise.props(promise)
+      return fileService.readFile(path + 'overAll' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -30,14 +27,11 @@ let getOverAll = function (token, id) {
   })
 }
 
-let getBaseGame = function (token, id) {
+let getOverAllTheory = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      let promise = {}
-      promise.simulation = fileService.readFile(path + 'baseGame'       + extension)
-      promise.theory     = fileService.readFile(path + 'baseGameTheory' + extension)
-      return Promise.props(promise)
+      return fileService.readFile(path + 'overAllTheory' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -52,14 +46,68 @@ let getBaseGame = function (token, id) {
   })
 }
 
-let getFreeGame = function (token, id) {
+let getBaseGameSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      let promise = {}
-      promise.simulation = fileService.readFile(path + 'freeGame'       + extension)
-      promise.theory     = fileService.readFile(path + 'freeGameTheory' + extension)
-      return Promise.props(promise)
+      return fileService.readFile(path + 'baseGame' + extension)
+    }).then(result => {
+      resolve(result)
+    }).catch(error => {
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
+let getBaseGameTheory = function (token, id) {
+  return new Promise((resolve, reject) => {
+    redisRepository.getAccountId(token).then(accountId => {
+      let path = folder + accountId + '/' + id  + '/result/'
+      return fileService.readFile(path + 'baseGameTheory' + extension)
+    }).then(result => {
+      resolve(result)
+    }).catch(error => {
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
+let getFreeGameSimulation = function (token, id) {
+  return new Promise((resolve, reject) => {
+    redisRepository.getAccountId(token).then(accountId => {
+      let path = folder + accountId + '/' + id  + '/result/'
+      return fileService.readFile(path + 'freeGame' + extension)
+    }).then(result => {
+      resolve(result)
+    }).catch(error => {
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
+let getFreeGameTheory = function (token, id) {
+  return new Promise((resolve, reject) => {
+    redisRepository.getAccountId(token).then(accountId => {
+      let path = folder + accountId + '/' + id  + '/result/'
+      return fileService.readFile(path + 'freeGameTheory' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -75,7 +123,10 @@ let getFreeGame = function (token, id) {
 }
 
 module.exports = {
-  getOverAll:  getOverAll,
-  getBaseGame: getBaseGame,
-  getFreeGame: getFreeGame
+  getOverAllSimulation:  getOverAllSimulation,
+  getOverAllTheory:      getOverAllTheory,
+  getBaseGameSimulation: getBaseGameSimulation,
+  getBaseGameTheory:     getBaseGameTheory,
+  getFreeGameSimulation: getFreeGameSimulation,
+  getFreeGameTheory:     getFreeGameTheory
 }
