@@ -58,7 +58,23 @@ let getProjectById = function (token, id) {
   })
 }
 
-let getProjectType = function (token, id) {
+let getAllProjectType = function (token) {
+  return new Promise((resolve, reject) => {
+    redisRepository.getAccountId(token).then(accountId => {
+      return projectTypeRepository.getAllType()
+    }).then(type => {
+      resolve(type)
+    }).catch(error => {
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
+let getProjectTypeById = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       return projectTypeRepository.getTypeById(id)
@@ -217,10 +233,11 @@ let deleteProject = function (token, id) {
 }
 
 module.exports = {
-  getAllProject:  getAllProject,
-  getProjectById: getProjectById,
-  getProjectType: getProjectType,
-  create:         create,
-  update:         update,
-  deleteProject:  deleteProject
+  getAllProject:      getAllProject,
+  getProjectById:     getProjectById,
+  getAllProjectType:  getAllProjectType,
+  getProjectTypeById: getProjectTypeById,
+  create:             create,
+  update:             update,
+  deleteProject:      deleteProject
 }
