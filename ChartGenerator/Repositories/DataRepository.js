@@ -28,17 +28,17 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
       let sum   = 0
       let count = 0
 
-      let q1  = Math.ceil(size / 4)
-      let mid = Math.ceil(size / 2)
-      let q3  = Math.ceil(size * 3 / 4)
+      let Q1  = Math.ceil(size / 4)
+      let Median = Math.ceil(size / 2)
+      let Q3  = Math.ceil(size * 3 / 4)
 
-      let q1Flag  = true
-      let midFlag = true
-      let q3Flag  = true
+      let Q1Flag  = true
+      let MedianFlag = true
+      let Q3Flag  = true
 
       let tableData = {
-        min: 0,
-        max: 0
+        Min: 0,
+        Max: 0
       }
 
       let i = 0
@@ -50,24 +50,24 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         count += row.count
         sum = Math.round(sum + key[i] * row.count)
 
-        if (q1Flag && count > q1) {
-          tableData.q1 = key[i]
-          q1Flag = false
+        if (Q1Flag && count > Q1) {
+          tableData.Q1 = key[i]
+          Q1Flag = false
         }
-        if (midFlag && count > mid) {
-          tableData.mid = key[i]
-          midFlag = false
+        if (MedianFlag && count > Median) {
+          tableData.Median = key[i]
+          MedianFlag = false
         }
-        if (q3Flag && count > q3) {
-          tableData.q3 = key[i]
-          q3Flag = false
+        if (Q3Flag && count > Q3) {
+          tableData.Q3 = key[i]
+          Q3Flag = false
         }
       }
 
-      tableData.min = key[0]
-      tableData.max = key[i]
+      tableData.Min = key[0]
+      tableData.Max = key[i]
 
-      tableData.avg = Math.floor(sum / size * 100) / 100
+      tableData.Avg = Math.floor(sum / size * 100) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
     }).catch(error => {
@@ -122,17 +122,17 @@ let getRTP = function (projectId, request) {
       let sum   = 0
       let count = 0
 
-      let q1  = Math.ceil(size / step / 4)
-      let mid = Math.ceil(size / step / 2)
-      let q3  = Math.ceil(size / step * 3 / 4)
+      let Q1  = Math.ceil(size / step / 4)
+      let Median = Math.ceil(size / step / 2)
+      let Q3  = Math.ceil(size / step * 3 / 4)
 
-      let q1Flag  = true
-      let midFlag = true
-      let q3Flag  = true
+      let Q1Flag  = true
+      let MedianFlag = true
+      let Q3Flag  = true
 
       let tableData = {
-        min: Math.floor(rtpSet[0][0].rtp * 100 / range) * range / 100,
-        max: Math.floor(rtpSet[0][rtpSet[0].length - 1].rtp * 100 / range) * range / 100
+        Min: Math.floor(rtpSet[0][0].rtp * 100 / range) * range / 100,
+        Max: Math.floor(rtpSet[0][rtpSet[0].length - 1].rtp * 100 / range) * range / 100
       }
 
       for (let rtp of rtpSet[0]) {
@@ -140,17 +140,17 @@ let getRTP = function (projectId, request) {
         count += rtp.count
         sum = Math.round(sum + tmp * range / 100 * rtp.count)
         
-        if (q1Flag && count > q1) {
-          tableData.q1 = tmp * range / 100
-          q1Flag = false
+        if (Q1Flag && count > Q1) {
+          tableData.Q1 = tmp * range / 100
+          Q1Flag = false
         }
-        if (midFlag && count > mid) {
-          tableData.mid = tmp * range / 100
-          midFlag = false
+        if (MedianFlag && count > Median) {
+          tableData.Median = tmp * range / 100
+          MedianFlag = false
         }
-        if (q3Flag && count > q3) {
-          tableData.q3 = tmp * range / 100
-          q3Flag = false
+        if (Q3Flag && count > Q3) {
+          tableData.Q3 = tmp * range / 100
+          Q3Flag = false
         }
 
         while (tmp >= result.size) {
@@ -159,7 +159,7 @@ let getRTP = function (projectId, request) {
         result.set(tmp * range / 100, result.get(tmp * range / 100) + rtp.count)
       }
 
-      tableData.avg = Math.floor(sum * step * 100 / size) / 100
+      tableData.Avg = Math.floor(sum * step * 100 / size) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
     }).catch(error => {
@@ -178,8 +178,8 @@ let getTotalNetWin = function (projectId, request) {
     result.set(0, 0)
 
     model.knex('overall' + projectId).select().where('id', '<=', size).then(rows => {
-      let min = 0
-      let max = 0
+      let Min = 0
+      let Max = 0
 
       let netWin = 0
       for (let row of rows) {
@@ -187,11 +187,11 @@ let getTotalNetWin = function (projectId, request) {
           netWin += row.netWin
         } else {
           let tmp = Math.floor(netWin / range)
-          while (tmp < min || tmp > max) {
-            if (tmp < min) {
-              result.set((--min) * range, 0)
+          while (tmp < Min || tmp > Max) {
+            if (tmp < Min) {
+              result.set((--Min) * range, 0)
             } else {
-              result.set((++max) * range, 0)
+              result.set((++Max) * range, 0)
             }
           }
           netWin = 0
