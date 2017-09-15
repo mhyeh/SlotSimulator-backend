@@ -10,7 +10,7 @@ let errorMsgService = require('./ErrorMsgService')
 
 let appRoot = path.join(path.dirname(require.main.filename), '../')
 
-let filesName = ['basePar', 'bonusPar', 'overallPar', 'baseDistribution', 'bonusDistribution', 'overallDistribution', 'rtp', 'totalNetWin', 'survivalRate']
+let filesName = ['baseSimPar', 'bonusSimPar', 'overallSimPar', 'baseTheoryPar', 'bonusTheoryPar', 'overallTheoryPar', 'baseSpinData', 'bonusSpinData', 'overallSpinData']
 
 let uploadFile = function(token, id, data) {
   return new Promise((resolve, reject) => {
