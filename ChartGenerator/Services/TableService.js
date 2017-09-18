@@ -12,7 +12,7 @@ let getOverAllSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'overAll' + extension)
+      return fileService.readFile(path + 'overallSimPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -31,7 +31,7 @@ let getOverAllTheory = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'overAllTheory' + extension)
+      return fileService.readFile(path + 'overallTheoryPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -50,7 +50,7 @@ let getBaseGameSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'baseGame' + extension)
+      return fileService.readFile(path + 'baseSimPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -69,7 +69,7 @@ let getBaseGameTheory = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'baseGameTheory' + extension)
+      return fileService.readFile(path + 'baseTheoryPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -88,7 +88,7 @@ let getFreeGameSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'freeGame' + extension)
+      return fileService.readFile(path + 'freeSimPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -107,7 +107,7 @@ let getFreeGameTheory = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'freeGameTheory' + extension)
+      return fileService.readFile(path + 'freeTheoryPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {

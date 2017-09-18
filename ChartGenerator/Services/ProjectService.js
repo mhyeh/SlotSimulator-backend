@@ -131,6 +131,8 @@ let create = function (token, body) {
       path = folder + userId + '/' + id
       return fileService.createFolder(path)
     }).then(() => {
+      return fileService.createFolder(path + '/result')
+    }).then(() => {
       for (let i of fileName) {
         data[i] = path + '/' + i + extension
       }
