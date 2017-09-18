@@ -10,7 +10,7 @@ let errorMsgService = require('./ErrorMsgService')
 
 let appRoot = path.join(path.dirname(require.main.filename), '../')
 
-let filesName = ['baseSimPar', 'bonusSimPar', 'overallSimPar', 'baseTheoryPar', 'bonusTheoryPar', 'overallTheoryPar', 'baseSpinData', 'bonusSpinData', 'overallSpinData', 'overallSurvivalRate']
+// let filesName = ['baseSimPar', 'bonusSimPar', 'overallSimPar', 'baseTheoryPar', 'bonusTheoryPar', 'overallTheoryPar', 'baseSpinData', 'bonusSpinData', 'overallSpinData', 'overallSurvivalRate']
 
 let uploadFile = function(token, id, data) {
   return new Promise((resolve, reject) => {
@@ -27,12 +27,7 @@ let uploadFile = function(token, id, data) {
           reject(errorMsgService.fsError)
           return
         }
-        let promises = []
-        for (let fileName of filesName) {
-          let extension = '.' + files[fileName].type
-          promises.push(fs.rename(dir + files[fileName].name + extension, dir + fileName + extension))
-        }
-        Promise.all(promises).then(() => {
+        fs.rename(dir + files[fileName].name + extension, dir + data.body.name + extension).then(() => {
           resolve()
         }).catch(error => {
           reject(errorMsgService.fsError)
