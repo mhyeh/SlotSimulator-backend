@@ -88,7 +88,7 @@ let getFreeGameSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'freeSimPar' + extension)
+      return fileService.readFile(path + 'bonusSimPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
@@ -107,7 +107,7 @@ let getFreeGameTheory = function (token, id) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + 'freeTheoryPar' + extension)
+      return fileService.readFile(path + 'bonusTheoryPar' + extension)
     }).then(result => {
       resolve(result)
     }).catch(error => {
