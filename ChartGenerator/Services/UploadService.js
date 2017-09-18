@@ -3,14 +3,16 @@ let formidable = require('formidable')
 let path       = require('path')
 let fs         = require('fs')
 
-let redisRepository = require('../Repositories/RedisRepository')
+let redisRepository  = require('../Repositories/RedisRepository')
+let uploadRepository = require('../Repositories/UploadRepository')
 
 let fileService     = require('./FileService')
 let errorMsgService = require('./ErrorMsgService')
 
-let appRoot   = path.join(path.dirname(require.main.filename), '../userProject/')
-let extension = '.csv'
-// let filesName = ['baseSimPar', 'bonusSimPar', 'overallSimPar', 'baseTheoryPar', 'bonusTheoryPar', 'overallTheoryPar', 'baseSpinData', 'bonusSpinData', 'overallSpinData', 'overallSurvivalRate']
+let appRoot    = path.join(path.dirname(require.main.filename), '../userProject/')
+let extension  = '.csv'
+let filesName  = ['baseSpinData', 'bonusSpinData', 'overallSpinData', 'overallSurvivalRate']
+let tablesName = ['basegame', 'freegame', 'overall', 'survivalrate']
 
 let uploadFile = function(token, id, data) {
   return new Promise((resolve, reject) => {
@@ -32,7 +34,23 @@ let uploadFile = function(token, id, data) {
             reject(errorMsgService.fsError)
             return
           }
-          resolve()
+          let promise
+          let flag = true;
+          for (index in filesName) {
+            if (fields.name === fileName[index]) {
+                promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, 'col2' + (fields.name === 'overallSpinData' ? ',col3' : ''))
+                flag = false
+            }
+          }
+          if (flag) {
+            resolve()
+          } else {
+            promise.then(() => {
+              resolve()
+            }).catch(error => {
+              reject(errorMsgService.serverError)
+            })
+          }
         })
       })
     }).catch(error => {
