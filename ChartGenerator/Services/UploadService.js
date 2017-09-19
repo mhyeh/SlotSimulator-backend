@@ -37,7 +37,7 @@ let uploadFile = function(token, id, data) {
           let promise
           let flag = true;
           for (index in filesName) {
-            if (fields.name === fileName[index]) {
+            if (fields.name === filesName[index]) {
                 promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, 'col2' + (fields.name === 'overallSpinData' ? ',col3' : ''))
                 flag = false
             }
