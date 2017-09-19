@@ -4,7 +4,9 @@ let model = require('../connect')
 
 let upload = function (id, table, path, field) {
   return new Promise((resolve, reject) => {
-    model.knex.raw('load data local infile ? into table ? (?)', path, table + 'id', field).then(() => {
+    model.knex(table + id).del().then(() => {
+      return model.knex.raw('load data local infile ? into table ' + table + id + ' (' + field + ')', path)
+    }).then(() => {
       resolve()
     }).catch(error => {
       console.log(error)
@@ -14,5 +16,5 @@ let upload = function (id, table, path, field) {
 }
 
 module.exports = {
-    upload: upload
-  }
+  upload: upload
+}
