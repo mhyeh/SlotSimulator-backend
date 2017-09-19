@@ -9,7 +9,7 @@ let upload = function (id, table, path, field) {
       return model.knex.raw(query)
     }).then(() => {
       let query = "LOAD DATA LOCAL INFILE '" + path + "' INTO TABLE "  + table + id +
-      " TERMINATED BY ',' ENCLOSED BY '\"' LINES TERMINATED BY '\n' IGNORE 1 LINES (" + field + ")"
+      "  IGNORE 1 LINES (" + field + ")"
       return model.knex.raw(query)
     }).then(() => {
       resolve()
