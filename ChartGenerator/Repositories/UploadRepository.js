@@ -5,7 +5,7 @@ let model = require('../connect')
 let upload = function (id, table, path, field) {
   return new Promise((resolve, reject) => {
     model.knex(table + id).del().then(() => {
-      let query = 'ALERT TABLE ' + table + id + ' AUTO_INCREMENT = 1'
+      let query = 'ALTER TABLE ' + table + id + ' AUTO_INCREMENT = 1'
       return model.knex.raw(query)
     }).then(() => {
       let query = 'LOAD DATA LOCAL INFILE \'' + path + '\' INTO TABLE \
