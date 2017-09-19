@@ -41,9 +41,9 @@ let uploadFile = function(token, id, data) {
               if (fields.name !== 'overallSurvivalRate') {
                 promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, 'netWin' + ((fields.name === 'overallSpinData') ? ',triger' : ''))
               } else {
-                promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, 'hand,isSurvival')
+                promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, 'id,hand,isSurvival')
               }
-                flag = false
+              flag = false
             }
           }
           if (flag) {
