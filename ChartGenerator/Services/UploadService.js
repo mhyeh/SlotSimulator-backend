@@ -34,27 +34,16 @@ let uploadFile = function(token, id, data) {
             reject(errorMsgService.fsError)
             return
           }
-          let promise
-          let flag = true;
-          for (index in filesName) {
+          for (let index in filesName) {
             if (fields.name === filesName[index]) {
               if (fields.name !== 'overallSurvivalRate') {
-                promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, '`netWin`' + ((fields.name === 'overallSpinData') ? ',`triger`' : ''))
+                uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, '`netWin`' + ((fields.name === 'overallSpinData') ? ',`triger`' : ''))
               } else {
-                promise = uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, '`id`,`hand`,`isSurvival`')
+                uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, '`id`,`hand`,`isSurvival`')
               }
-              flag = false
             }
           }
-          if (flag) {
-            resolve()
-          } else {
-            promise.then(() => {
-              resolve()
-            }).catch(error => {
-              reject(errorMsgService.serverError)
-            })
-          }
+          resolve()
         })
       })
     }).catch(error => {
