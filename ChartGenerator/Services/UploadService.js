@@ -37,10 +37,8 @@ let uploadFile = function(token, id, data) {
           for (let index in filesName) {
             if (fields.name === filesName[index]) {
               if (fields.name !== 'overallSurvivalRate') {
-                console.log(fields.name)
                 uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, '`netWin`' + ((fields.name === 'overallSpinData') ? ',`triger`' : ''))
               } else {
-                console.log(fields.name)
                 uploadRepository.upload(id, tablesName[index], dir + fields.name + extension, '`id`,`hand`,`isSurvival`')
               }
             }

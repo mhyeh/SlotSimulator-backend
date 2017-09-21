@@ -3,7 +3,7 @@ var redis = Promise.promisifyAll(require('redis'))
 
 var accountRepository = require('./AccountRepository')
 
-var existTime = 60 * 30
+var existTime = 60 * 60 * 2
 var cache = redis.createClient()
 
 cache.on('ready', error => {
