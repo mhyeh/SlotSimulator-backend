@@ -7,8 +7,8 @@ let upload = function (id, table, path, field) {
     let query = 'ALTER TABLE ' + table + id + ' AUTO_INCREMENT = 1'
     return model.knex.raw(query)
   }).then(() => {
-    let query = 'LOAD DATA LOCAL INFILE ' + path + ' INTO TABLE '  + table + id +
-    ' IGNORE 1 LINES (' + field + ')'
+    let query = 'LOAD DATA LOCAL INFILE \'' + path + '\' INTO TABLE '  + table + id +
+    ' fields terminated by \',\' enclosed by \'\"\' lines terminated by \'\\n\' IGNORE 1 LINES (' + field + ')'
     model.knex.raw(query).then(() => {
       console.log('success')
     }).catch(error => {
