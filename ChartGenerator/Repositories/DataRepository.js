@@ -52,7 +52,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         result.set(key[i], result.get(key[i]) + row.count)
 
         count += row.count
-        sum = sum.plus(new bigNumber(key[i]).times(row.count)).round()
+        sum = sum.plus(new bigNumber(key[i]).times(row.count))
 
         if (Q1Flag && count > Q1) {
           tableData.Q1 = key[i]
@@ -121,7 +121,6 @@ let getRTP = function (projectId, request) {
 
     projectRepository.getProjectById(projectId).then(project => {
       return model.knex.raw('select `rtp`, count(*) `count` from (select (sum(`netWin`) / ? + 1) `rtp`, floor((`id` - 1) / ?) `group` from `overall' + projectId + '` where `id` <= ? group by `group`) `result` group by `rtp` order by `rtp` asc', [project.betCost * step, step, size])
-      // return model.knex.select(model.knex.raw('((sum(`netWin`) + ?) / ?) as rtp, floor((`id` - 1) / ?) as `group`', [project.betCost * step, step, step])).from('overall' + projectId).where('id', '<=', size).groupBy('group').orderBy('rtp', 'asc')
     }).then(rtpSet => {
       let sum   = new bigNumber(0)
       let count = 0
@@ -142,7 +141,7 @@ let getRTP = function (projectId, request) {
       for (let rtp of rtpSet[0]) {
         let tmp = Math.floor(rtp.rtp * 100 / range)
         count += rtp.count
-        sum = sum.plus(new bigNumber(tmp).times(range).dividedBy(100).times(rtp.count)).round()
+        sum = sum.plus(new bigNumber(tmp).times(range).dividedBy(100).times(rtp.count))
         
         if (Q1Flag && count > Q1) {
           tableData.Q1 = tmp * range / 100
