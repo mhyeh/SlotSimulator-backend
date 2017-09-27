@@ -52,7 +52,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         result.set(key[i], result.get(key[i]) + row.count)
 
         count += row.count
-        sum = sum.plus(new bigNumber(key[i]).times(row.count))
+        sum = sum.plus(new bigNumber(key[i]).times(row.count).dividedBy(50))
 
         if (Q1Flag && count > Q1) {
           tableData.Q1 = key[i]
@@ -71,7 +71,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
       tableData.Min = key[0]
       tableData.Max = key[i]
 
-      tableData.Avg = sum.dividedBy(size).times(100).floor().dividedBy(100)
+      tableData.Avg = sum.dividedBy(size).times(100).floor().dividedBy(100).times(50)
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
     }).catch(error => {
