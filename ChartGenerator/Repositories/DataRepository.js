@@ -54,7 +54,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
 
         count += row.count
         //sum = sum.plus(new bigNumber(key[i]).times(row.count))
-        sum += key[i] * row.count
+        sum = Math.round(sum + key[i] * row.count) 
 
         if (Q1Flag && count > Q1) {
           tableData.Q1 = key[i]
@@ -145,7 +145,7 @@ let getRTP = function (projectId, request) {
       for (let rtp of rtpSet[0]) {
         let tmp = Math.floor(rtp.rtp * 100 / range)
         count += rtp.count
-        sum += tmp * range / 100 * rtp.count
+        sum = Math.round(sum + tmp * range / 100 * rtp.count) 
         //sum = sum.plus(new bigNumber(tmp).times(range).dividedBy(100).times(rtp.count))
         
         if (Q1Flag && count > Q1) {
