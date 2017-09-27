@@ -24,9 +24,10 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   
   return new Promise((resolve, reject) => {
     projectRepository.getProjectById(projectId).then(project => {
-      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
+      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 100) / 100 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
     }).then(rows => {
-      let sum   = new bigNumber(0)
+      //let sum   = new bigNumber(0)
+      let sum = 0
       let count = 0
 
       let Q1  = Math.ceil(size / 4)
@@ -52,7 +53,8 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         result.set(key[i], result.get(key[i]) + row.count)
 
         count += row.count
-        sum = sum.plus(new bigNumber(key[i]).times(row.count))
+        //sum = sum.plus(new bigNumber(key[i]).times(row.count))
+        sum += key[i] * row.count
 
         if (Q1Flag && count > Q1) {
           tableData.Q1 = key[i]
@@ -71,7 +73,8 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
       tableData.Min = key[0]
       tableData.Max = key[i]
 
-      tableData.Avg = sum.dividedBy(size).times(100).floor().dividedBy(100.0)
+      //tableData.Avg = sum.dividedBy(size).times(100).floor().dividedBy(100.0)
+      tableData.Avg = Math.floor(sum / size * 100) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
     }).catch(error => {
@@ -122,7 +125,8 @@ let getRTP = function (projectId, request) {
     projectRepository.getProjectById(projectId).then(project => {
       return model.knex.raw('select `rtp`, count(*) `count` from (select (sum(`netWin`) / ? + 1) `rtp`, floor((`id` - 1) / ?) `group` from `overall' + projectId + '` where `id` <= ? group by `group`) `result` group by `rtp` order by `rtp` asc', [project.betCost * step, step, size])
     }).then(rtpSet => {
-      let sum   = new bigNumber(0)
+      //let sum   = new bigNumber(0)
+      let sum = 0
       let count = 0
 
       let Q1  = Math.ceil(size / step / 4)
@@ -141,7 +145,8 @@ let getRTP = function (projectId, request) {
       for (let rtp of rtpSet[0]) {
         let tmp = Math.floor(rtp.rtp * 100 / range)
         count += rtp.count
-        sum = sum.plus(new bigNumber(tmp).times(range).dividedBy(100).times(rtp.count))
+        sum += tmp * range / 100 * rtp.count
+        //sum = sum.plus(new bigNumber(tmp).times(range).dividedBy(100).times(rtp.count))
         
         if (Q1Flag && count > Q1) {
           tableData.Q1 = tmp * range / 100
@@ -162,7 +167,7 @@ let getRTP = function (projectId, request) {
         result.set(tmp * range / 100, result.get(tmp * range / 100) + rtp.count)
       }
 
-      tableData.Avg = sum.times(step).times(100).dividedBy(size).floor().dividedBy(100)
+      tableData.Avg = Math.floor(sum * step * 100 / size) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
     }).catch(error => {
