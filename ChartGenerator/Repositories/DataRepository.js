@@ -47,6 +47,9 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         while (i < key.length - 1 && key[i] < row.payOut) {
           i++
         }
+        if (i > 0) {
+          i--
+        }
         result.set(key[i], result.get(key[i]) + row.count)
 
         count += row.count
