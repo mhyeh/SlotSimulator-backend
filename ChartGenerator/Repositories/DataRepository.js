@@ -24,7 +24,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   
   return new Promise((resolve, reject) => {
     projectRepository.getProjectById(projectId).then(project => {
-      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('(`netWin` / ? + 1) as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
+      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
     }).then(rows => {
       let sum = 0
       let count = 0
