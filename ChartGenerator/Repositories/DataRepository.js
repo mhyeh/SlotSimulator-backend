@@ -6,6 +6,7 @@ let projectRepository = require('./ProjectRepository')
 
 let model = require('../connect')
 
+// calculate payout distribution
 let calPayOutDistribution = function (tableIndex, projectId, request) {
   let table = ['overall', 'basegame', 'freegame']
 
@@ -15,6 +16,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   let result = new Map()
   let key    = []
 
+  // create a set according to config
   for (let distribution of distributions) {
     for (let i = distribution.lower; i < distribution.upper; i = Math.round((i + distribution.space) * 10) / 10) {
       key.push(i)
@@ -23,7 +25,9 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   }
   
   return new Promise((resolve, reject) => {
+    // get the bet cost of project
     projectRepository.getProjectById(projectId).then(project => {
+      // 計算每筆 payout 到小數點第一位 以及他的出現次數
       return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
     }).then(rows => {
       let sum = 0
@@ -42,6 +46,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         Max: 0
       }
 
+      // categorize each payout into the set
       let i = 0
       for (let row of rows) {
         let tmp = i
@@ -53,9 +58,10 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         }
         result.set(key[i], result.get(key[i]) + row.count)
 
-        count += row.count
-        sum   += key[i] * row.count
+        count += row.count // calculate the sum of occurrences time       
+        sum   += key[i] * row.count // calculate the sum of payout
 
+        // get Q1, Median and Q3
         if (Q1Flag && count > Q1) {
           tableData.Q1 = key[i]
           Q1Flag = false
@@ -70,9 +76,11 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
         }
       }
 
+      // get min and max payout
       tableData.Min = key[0]
       tableData.Max = key[i]
 
+      // get average RTP
       tableData.Avg = Math.floor(sum / size * 100) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
@@ -83,6 +91,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   })
 }
 
+// get overall distribution
 let getOverAll = function (projectId, request) {
   return new Promise((resolve, reject) => {
     calPayOutDistribution(0, projectId, request).then(result => {
@@ -93,6 +102,7 @@ let getOverAll = function (projectId, request) {
   })
 }
 
+// get base game distribution
 let getBaseGame = function (projectId, request) {
   return new Promise((resolve, reject) => {
     calPayOutDistribution(1, projectId, request).then(result => {
@@ -103,6 +113,7 @@ let getBaseGame = function (projectId, request) {
   })
 }
 
+// get bonus game distribution
 let getFreeGame = function (projectId, request) {
   return new Promise((resolve, reject) => {
     calPayOutDistribution(2, projectId, request).then(result => {
@@ -113,6 +124,7 @@ let getFreeGame = function (projectId, request) {
   })
 }
 
+// get player experience (每 400 筆紀錄一次 RTP)
 let getRTP = function (projectId, request) {
   return new Promise((resolve, reject) => {
     let size  = request.size
@@ -121,7 +133,9 @@ let getRTP = function (projectId, request) {
 
     let result = new Map()
 
+    // get the bet cost of project
     projectRepository.getProjectById(projectId).then(project => {
+      // 根據指定場數紀錄 RTP，並計算不同 RTP 的出現次數
       return model.knex.raw('select `rtp`, count(*) `count` from (select (sum(`netWin`) / ? + 1) `rtp`, floor((`id` - 1) / ?) `group` from `overall' + projectId + '` where `id` <= ? group by `group`) `result` group by `rtp` order by `rtp` asc', [project.betCost * step, step, size])
     }).then(rtpSet => {
       let sum   = 0
@@ -135,17 +149,20 @@ let getRTP = function (projectId, request) {
       let MedianFlag = true
       let Q3Flag     = true
 
+      // get min and max RTP
       let tableData = {
         Min: Math.floor(rtpSet[0][0].rtp * 100 / range) * range / 100,
         Max: Math.floor(rtpSet[0][rtpSet[0].length - 1].rtp * 100 / range) * range / 100
       }
 
+      // categorize each RTP into the set
       for (let rtp of rtpSet[0]) {
         let tmp = Math.floor(rtp.rtp * 100 / range)
 
-        count += rtp.count
-        sum   += tmp * range / 100 * rtp.count
+        count += rtp.count // calculate the sum of occurrences time    
+        sum   += tmp * range / 100 * rtp.count // calculate the sum of payout
         
+        // get Q1, Median and Q3
         if (Q1Flag && count > Q1) {
           tableData.Q1 = tmp * range / 100
           Q1Flag = false
@@ -165,6 +182,7 @@ let getRTP = function (projectId, request) {
         result.set(tmp * range / 100, result.get(tmp * range / 100) + rtp.count)
       }
 
+      // get average RTP
       tableData.Avg = Math.floor(sum * step * 100 / size) / 100
 
       resolve({chartData: mapify.demapify(result), tableData: tableData})
@@ -175,6 +193,7 @@ let getRTP = function (projectId, request) {
   })
 }
 
+// get player experience (觸發 free game 壓力)
 let getTotalNetWin = function (projectId, request) {
   return new Promise((resolve, reject) => {
     let size    = request.size
@@ -183,11 +202,13 @@ let getTotalNetWin = function (projectId, request) {
     let result = new Map()
     result.set(0, 0)
 
+    // get all spin data
     model.knex('overall' + projectId).select().where('id', '<=', size).then(rows => {
       let Min = 0
       let Max = 0
 
       let netWin = 0
+      // categorize each netWin into the set
       for (let row of rows) {
         if (row.triger === 0) {
           netWin += row.netWin
@@ -212,6 +233,7 @@ let getTotalNetWin = function (projectId, request) {
   })
 }
 
+// get player experience (存活率分析)
 let getSurvivalRate = function (projectId, request) {
   return new Promise((resolve, reject) => {
     let size = request.size

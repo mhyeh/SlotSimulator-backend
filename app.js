@@ -19,26 +19,16 @@ let errorMsgService = require('./ChartGenerator/Services/ErrorMsgService')
 
 let app = express()
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')))
 app.use(logger('dev'))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(cookieParser())
 app.use(express.static(path.join(__dirname, 'public')))
-/*
-app.use((req, res, next) => {
-  res.set({'Access-Control-Allow-Origin':  '*',
-           'Access-Control-Allow-Headers': 'Content-Type,authorization' 
-  })
-
-  next()
-})*/
-
 app.use(cors())
 
 app.use('/account', Account)
 
+// verify token
 app.use((req, res, next) => {
   let token = req.get('Authorization')
   RedisRepository.getAccountInfo(token).then(accountInfo => {

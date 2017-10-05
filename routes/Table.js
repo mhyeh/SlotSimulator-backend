@@ -4,6 +4,7 @@ let tableService = require('../ChartGenerator/Services/TableService')
 
 let router = express.Router()
 
+//get overall simulation PAR sheet
 router.get('/:id/overAllSimulation', (req, res, next) => {
   tableService.getOverAllSimulation(req.get('Authorization'), req.params.id).then(result => {
     res.status(200).json({simulation: result})
@@ -12,6 +13,7 @@ router.get('/:id/overAllSimulation', (req, res, next) => {
   })
 })
 
+//get overall theory PAR sheet
 router.get('/:id/overAllTheory', (req, res, next) => {
   tableService.getOverAllTheory(req.get('Authorization'), req.params.id).then(result => {
     res.status(200).json({theory: result})
@@ -20,6 +22,7 @@ router.get('/:id/overAllTheory', (req, res, next) => {
   })
 })
 
+//get base game simulation PAR sheet
 router.get('/:id/baseGameSimulation', (req, res, next) => {
   tableService.getBaseGameSimulation(req.get('Authorization'), req.params.id).then(result => {
     res.status(200).json({simulation: result})
@@ -28,6 +31,7 @@ router.get('/:id/baseGameSimulation', (req, res, next) => {
   })
 })
 
+//get base game theory PAR sheet
 router.get('/:id/baseGameTheory', (req, res, next) => {
   tableService.getBaseGameTheory(req.get('Authorization'), req.params.id).then(result => {
     res.status(200).json({theory: result})
@@ -36,6 +40,7 @@ router.get('/:id/baseGameTheory', (req, res, next) => {
   })
 })
 
+//get bonus game simulation PAR sheet
 router.get('/:id/FreeGameSimulation', (req, res, next) => {
   tableService.getFreeGameSimulation(req.get('Authorization'), req.params.id).then(result => {
     res.status(200).json({simulation: result})
@@ -44,6 +49,7 @@ router.get('/:id/FreeGameSimulation', (req, res, next) => {
   })
 })
 
+//get bonus game theory PAR sheet
 router.get('/:id/FreeGameTheory', (req, res, next) => {
   tableService.getFreeGameTheory(req.get('Authorization'), req.params.id).then(result => {
     res.status(200).json({theory: result})

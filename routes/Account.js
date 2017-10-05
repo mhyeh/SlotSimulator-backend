@@ -5,6 +5,7 @@ let accountService = require('../ChartGenerator/Services/AccountService')
 
 let router = express.Router()
 
+// login
 router.post('/', (req, res, next) => {
   accountService.login(req.body).then(token => {
     res.status(200).json({token: token})
@@ -13,6 +14,7 @@ router.post('/', (req, res, next) => {
   })
 })
 
+// register
 router.post('/register', (req, res, next) => {
   accountService.register(req.body).then(token => {
     res.status(200).json({token: token})
@@ -21,6 +23,7 @@ router.post('/register', (req, res, next) => {
   })
 })
 
+// update account data
 router.put('/', (req, res, next) => {
   accountService.update(req.get('Authorization'), req.body).then(token => {
     res.status(200).json({token: token})
@@ -29,6 +32,7 @@ router.put('/', (req, res, next) => {
   })
 })
 
+// check if the account is unused
 router.post('/confirm', (req, res, next) => {
   accountService.checkAccount(req.body.account).then(() => {
     res.status(200).json({message: 'success'})
@@ -37,6 +41,7 @@ router.post('/confirm', (req, res, next) => {
   })
 })
 
+// get account data
 router.get('/', (req, res, next) => {
   accountService.getAccount(req.get('Authorization')).then(userInfo => {
     res.status(200).json(userInfo)

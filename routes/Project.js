@@ -4,6 +4,7 @@ let projectService = require('../ChartGenerator/Services/ProjectService')
 
 let router = express.Router()
 
+//get all projects
 router.get('/', (req, res, next) => {
   projectService.getAllProject(req.get('Authorization')).then(allProject => {
     res.status(200).json(allProject)
@@ -12,8 +13,7 @@ router.get('/', (req, res, next) => {
   })
 })
 
-
-
+//get specify project
 router.get('/:id', (req, res, next) => {
   projectService.getProjectById(req.get('Authorization'), req.params.id).then(project => {
     res.status(200).json(project)
@@ -22,6 +22,7 @@ router.get('/:id', (req, res, next) => {
   })
 })
 
+// create a new project
 router.post('/', (req, res, next) => {
   projectService.create(req.get('Authorization'), req.body).then(() => {
     res.status(200).json({message: 'success'})
@@ -30,6 +31,7 @@ router.post('/', (req, res, next) => {
   })
 })
 
+// update project
 router.put('/:id', (req, res, next) => {
   projectService.update(req.get('Authorization'), req.params.id, req.body).then(() => {
     res.status(200).json({message: 'success'})
@@ -38,6 +40,7 @@ router.put('/:id', (req, res, next) => {
   })
 })
 
+// delete project
 router.delete('/:id', (req, res, next) => {
   projectService.deleteProject(req.get('Authorization'), req.params.id).then(() => {
     res.status(200).json({message: 'success'})

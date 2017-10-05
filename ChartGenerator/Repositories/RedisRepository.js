@@ -14,6 +14,7 @@ cache.on('error', error => {
   console.log(error)
 })
 
+// set new account and token into redis
 let set = function (token, accountId) {
   cache.set(token, accountId)
   cache.expire(token, existTime)
@@ -22,6 +23,7 @@ let set = function (token, accountId) {
   cache.expire(accountId, existTime)
 }
 
+// check if account or token are exist in redis
 let checkAccount = function (token, accountId) {
   let Token = token
   let AccountId = accountId
@@ -37,6 +39,7 @@ let checkAccount = function (token, accountId) {
   })
 }
 
+// get account id by token
 let getAccountId = function (token) {
   return new Promise((resolve, reject) => {
     cache.getAsync(token).then(accountId => {
@@ -51,6 +54,7 @@ let getAccountId = function (token) {
   })
 }
 
+// get account data by token
 let getAccountInfo = function (token) {
   return new Promise((resolve, reject) => {
     getAccountId(token).then(accountId => {

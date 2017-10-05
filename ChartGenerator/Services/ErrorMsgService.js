@@ -1,3 +1,4 @@
+// define error message
 module.exports = {
   accountError:  {error: 'account error',               code: 101},
   pwdError:      {error: 'password error',              code: 102},

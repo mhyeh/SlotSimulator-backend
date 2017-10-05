@@ -2,6 +2,7 @@ let Promise = require('bluebird')
 
 let model = require('../connect')
 
+// import spin data and survival rate data into data table
 let upload = function (id, table, path, field) {
   model.knex(table + id).del().then(() => {
     let query = 'ALTER TABLE ' + table + id + ' AUTO_INCREMENT = 1'

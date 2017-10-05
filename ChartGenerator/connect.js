@@ -1,3 +1,4 @@
+// connect database
 let config = require('../config/database')
 let knex = require('knex')({
   client: 'mysql',

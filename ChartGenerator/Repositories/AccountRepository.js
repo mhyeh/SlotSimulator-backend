@@ -2,6 +2,7 @@ let Promise = require('bluebird')
 
 let model = require('../connect')
 
+// get account's password
 let getPassword = function (account) {
   return new Promise((resolve, reject) => {
     model.knex.select('password').from('account').where('account', account).then(account => {
@@ -13,6 +14,7 @@ let getPassword = function (account) {
   })
 }
 
+// get account data by id
 let getAccountById = function (id) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('account').where('id', id).then(accountInfo => {
@@ -24,6 +26,7 @@ let getAccountById = function (id) {
   })
 }
 
+// create a new account
 let createAccount = function (account, password, name) {
   return new Promise((resolve, reject) => {
     model.knex('account').insert({account: account, password: password, name: name}).then(() => {
@@ -35,6 +38,7 @@ let createAccount = function (account, password, name) {
   })
 }
 
+// update account data
 let updateAccount = function (id, password, name) {
   return new Promise((resolve, reject) => {
     model.knex('account').where('id', id).update({password: password, name: name}).then(() => {
@@ -46,6 +50,7 @@ let updateAccount = function (id, password, name) {
   })
 }
 
+// get account data by account
 let getAccount = function (account) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('account').where('account', account).then(accountInfo => {

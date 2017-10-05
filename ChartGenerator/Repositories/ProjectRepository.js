@@ -2,6 +2,7 @@ let Promise = require('bluebird')
 
 let model = require('../connect')
 
+// get all project
 let getAllProject = function (userId) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('project').where('userId', userId).then(rows => {
@@ -21,6 +22,7 @@ let getAllProject = function (userId) {
   })
 }
 
+// get project by project's id
 let getProjectById = function (id) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('project').where('id', id).then(project => {
@@ -32,6 +34,7 @@ let getProjectById = function (id) {
   })
 }
 
+// get newest project
 let getNewestProject = function (userid) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('project').where('userid', userid).orderBy('id', 'desc').then(project => {
@@ -43,12 +46,14 @@ let getNewestProject = function (userid) {
   })
 }
 
+// create a new project
 let createProject = function (request) {
   return new Promise((resolve, reject) => {
     model.knex('project').insert(request).then(() => {
       return getNewestProject(request.userId)
     }).then(project => {
       let promise = []
+      // create new data table to store spin data and survival rate data
       promise.push(model.knex.raw('create table overall? (id int auto_increment primary key, netWin bigint, triger int)', [project.id]))
       promise.push(model.knex.raw('create table basegame? (id int auto_increment primary key, netWin bigint)', [project.id]))
       promise.push(model.knex.raw('create table freegame? (id int auto_increment primary key, netWin bigint)', [project.id]))
@@ -64,6 +69,7 @@ let createProject = function (request) {
   })
 }
 
+// update project data
 let updateProject = function (id, request) {
   return new Promise((resolve, reject) => {
     model.knex('project').where('id', id).update(request).then(() => {
@@ -75,6 +81,7 @@ let updateProject = function (id, request) {
   })
 }
 
+// delete project
 let deleteProject = function (id) {
   return new Promise((resolve, reject) => {
     model.knex('project').where('id', id).del().then(() => {

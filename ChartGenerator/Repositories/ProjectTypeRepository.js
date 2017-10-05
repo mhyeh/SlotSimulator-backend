@@ -2,6 +2,7 @@ let Promise = require('bluebird')
 
 let model = require('../connect')
 
+// get all types of project
 let getAllType = function () {
   return new Promise((resolve, reject) => {
     model.knex.select().from('projecttype').then(allType => {
@@ -13,6 +14,7 @@ let getAllType = function () {
   })
 }
 
+//get spectify type of project
 let getTypeById = function (id) {
   return new Promise((resolve, reject) => {
     model.knex.select().from('projecttype').where('id', id).then(type => {
@@ -28,6 +30,7 @@ let getTypeById = function (id) {
   })
 }
 
+// create a new type of project
 let createType = function (name) {
   return new Promise((resolve, reject) => {
     model.knex('projecttype').insert('name', name).then(() => {

@@ -8,8 +8,10 @@ let errorMsgService = require('./ErrorMsgService')
 let extension = '.csv'
 let folder    = './userProject/'
 
+//get overall simulation PAR sheet
 let getOverAllSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
       return fileService.readFile(path + 'overallSimPar' + extension)
@@ -27,8 +29,10 @@ let getOverAllSimulation = function (token, id) {
   })
 }
 
+//get overall theory PAR sheet
 let getOverAllTheory = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
       return fileService.readFile(path + 'overallTheoryPar' + extension)
@@ -46,8 +50,10 @@ let getOverAllTheory = function (token, id) {
   })
 }
 
+//get base game simulation PAR sheet
 let getBaseGameSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
       return fileService.readFile(path + 'baseSimPar' + extension)
@@ -65,8 +71,10 @@ let getBaseGameSimulation = function (token, id) {
   })
 }
 
+//get base game theory PAR sheet
 let getBaseGameTheory = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
       return fileService.readFile(path + 'baseTheoryPar' + extension)
@@ -84,8 +92,10 @@ let getBaseGameTheory = function (token, id) {
   })
 }
 
+//get bonus game simulation PAR sheet
 let getFreeGameSimulation = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
       return fileService.readFile(path + 'bonusSimPar' + extension)
@@ -103,8 +113,10 @@ let getFreeGameSimulation = function (token, id) {
   })
 }
 
+//get bonus game theory PAR sheet
 let getFreeGameTheory = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
       return fileService.readFile(path + 'bonusTheoryPar' + extension)

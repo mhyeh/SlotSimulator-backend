@@ -6,6 +6,7 @@ let redisRepository   = require('../Repositories/RedisRepository')
 
 let errorMsgService = require('./ErrorMsgService')
 
+// get unused token
 let getUnusedToken = function () {
   let token = bcrypt.genSaltSync(40).toString('base64').substr(7, 20)
   return new Promise((resolve, reject) => {
@@ -17,6 +18,7 @@ let getUnusedToken = function () {
   })
 }
 
+// create a new token
 let createToken = function (accountId) {
   return new Promise((resolve, reject) => {
     getUnusedToken().then(token => {
@@ -28,18 +30,22 @@ let createToken = function (accountId) {
   })
 }
 
+// login
 let login = function (user) {
   return new Promise((resolve, reject) => {
+    // check if datas aren't empty
     if (user.account === undefined || user.password === undefined) {
       reject(errorMsgService.emptyInput)
       return
     }
-      
+    
+    // compare account
     accountRepository.getPassword(user.account).then(password => {
       if (password === '') {
         reject(errorMsgService.accountError)
         return
       }
+      // cpmpare password
       if (!bcrypt.compareSync(user.password, password)) {
         reject(errorMsgService.pwdError)
         return
@@ -56,16 +62,20 @@ let login = function (user) {
   })
 }
 
+// register
 let register = function (user) {
   return new Promise((resolve, reject) => {
+    // check if datas aren't empty
     if (user.password === undefined || user.checkPassword === undefined || user.account === undefined || 
       user.password != user.checkPassword || user.name === undefined) {
       reject(errorMsgService.emptyInput)
       return
     } 
     
+    // hash password
     let hsahPassword = bcrypt.hashSync(user.password)
   
+    // check if the account is unused
     accountRepository.getPassword(user.account).then(password => {
       if (password != '') {
         reject(errorMsgService.accountUsed)
@@ -85,13 +95,18 @@ let register = function (user) {
   })
 }
 
+// update account data
 let update = function (token, updateData) {
   return new Promise((resolve, reject) => {
     let userData = {}
+
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       return accountRepository.getAccountById(accountId)
     }).then((accountInfo) => {
       userData = accountInfo
+
+      // check if the password is correct
       if (updateData.password === undefined) {
         reject(errorMsgService.emptyInput)
         return
@@ -101,6 +116,7 @@ let update = function (token, updateData) {
         return
       } 
       
+      // get update data
       updateData.newName     = ((updateData.newName != undefined) ? updateData.newName : userData.name)
       updateData.newPassword = ((updateData.newPassword != undefined && updateData.newCheckPassword != undefined &&
                                  updateData.newPassword === updateData.newCheckPassword) ? 
@@ -120,6 +136,7 @@ let update = function (token, updateData) {
   })
 }
 
+// check if the account is unused
 let checkAccount = function (account) {
   return new Promise((resolve, reject) => {
     if (account === undefined) {
@@ -138,8 +155,10 @@ let checkAccount = function (account) {
   }) 
 }
 
+// get account data
 let getAccount = function (token) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       return accountRepository.getAccountById(accountId)
     }).then(accountInfo => {

@@ -6,6 +6,7 @@ let rimraf  = Promise.promisify(require('rimraf'))
 
 let appRoot = path.join(path.dirname(require.main.filename), '../')
 
+// create a new file and write content in it
 let createFile = function (name, context) {
   return new Promise((resolve, reject) => {
     
@@ -18,6 +19,7 @@ let createFile = function (name, context) {
   })
 }
 
+// delete a file
 let deleteFile = function (name) {
   return new Promise((resolve, reject) => {
     fs.unlinkAsync(path.join(appRoot, name)).then(() => {
@@ -29,6 +31,7 @@ let deleteFile = function (name) {
   })
 }
 
+// read a file
 let readFile = function (name) {
   return new Promise((resolve, reject) => {
     fs.readFileAsync(path.join(appRoot, name), 'utf8').then(context => {
@@ -40,6 +43,7 @@ let readFile = function (name) {
   })
 }
 
+// create a new folder (can be nested)
 let createFolder = function (name) {
   return new Promise((resolve, reject) => {
     mkdirp.mkdirpAsync(name).then(() => {
@@ -51,6 +55,7 @@ let createFolder = function (name) {
   })
 }
 
+// delete a folder (can be nested)
 let deleteFolder = function (path) {
   return new Promise((resolve, reject) => {
     rimraf(path).then(() => {

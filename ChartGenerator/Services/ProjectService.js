@@ -13,8 +13,10 @@ let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'att
 let extension = '.csv'
 let folder    = './userProject/'
 
+// get all project
 let getAllProject = function (token) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       return projectRepoisitory.getAllProject(accountId)
     }).then(allProject => {
@@ -29,12 +31,15 @@ let getAllProject = function (token) {
   })
 }
 
+//get spectify project
 let getProjectById = function (token, id) {
   return new Promise((resolve, reject) => {
     let data = {}
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       return projectRepoisitory.getProjectById(id)
     }).then(projectInfo => {
+      //之後不會用到 要改寫
       data = projectInfo
       let readFile = {}
       for (let i of fileName) {
@@ -58,8 +63,10 @@ let getProjectById = function (token, id) {
   })
 }
 
+//get all type of project 
 let getAllProjectType = function (token) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       return projectTypeRepository.getAllType()
     }).then(type => {
@@ -74,8 +81,10 @@ let getAllProjectType = function (token) {
   })
 }
 
+// get spectify type of project 
 let getProjectTypeById = function (token, id) {
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       return projectTypeRepository.getTypeById(id)
     }).then(type => {
@@ -92,12 +101,14 @@ let getProjectTypeById = function (token, id) {
   })
 }
 
+// create a new project (需要改寫)
 let create = function (token, body) {
   let userId
   let data = {}
   let id
   let path
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
       data = {
@@ -160,9 +171,11 @@ let create = function (token, body) {
   })
 }
 
+// update project (需要改寫)
 let update = function (token, id, body) {
   let data
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let userId = accountId
       let path   = folder + userId + '/' + id
@@ -212,9 +225,11 @@ let update = function (token, id, body) {
   })
 }
 
+//delete project
 let deleteProject = function (token, id) {
   let userId
   return new Promise((resolve, reject) => {
+    // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
       return projectRepoisitory.deleteProject(id)
