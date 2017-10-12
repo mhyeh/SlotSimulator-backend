@@ -134,11 +134,32 @@ let getFreeGameTheory = function (token, id) {
   })
 }
 
+let getTable = function (token, id, type) {
+  return new Promise((resolve, reject) => {
+    // check if the token is valid
+    redisRepository.getAccountId(token).then(accountId => {
+      let path = folder + accountId + '/' + id  + '/result/'
+      return fileService.readFile(path + type + 'Par' + extension)
+    }).then(result => {
+      resolve(result)
+    }).catch(error => {
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
 module.exports = {
   getOverAllSimulation:  getOverAllSimulation,
   getOverAllTheory:      getOverAllTheory,
   getBaseGameSimulation: getBaseGameSimulation,
   getBaseGameTheory:     getBaseGameTheory,
   getFreeGameSimulation: getFreeGameSimulation,
-  getFreeGameTheory:     getFreeGameTheory
+  getFreeGameTheory:     getFreeGameTheory,
+  getTable:              getTable
 }
