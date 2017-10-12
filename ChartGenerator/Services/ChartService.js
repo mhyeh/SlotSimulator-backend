@@ -5,6 +5,7 @@ let redisRepository = require('../Repositories/RedisRepository')
 
 let errorMsgService = require('./ErrorMsgService')
 
+/*
 //get overall distribution
 let getOverAll = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
@@ -51,6 +52,24 @@ let getFreeGame = function (token, projectId, request) {
         return
       }
       return dataRepository.getFreeGame(projectId, request)
+    }).then(freeGame => {
+      resolve(freeGame)
+    }).catch(error => {
+      reject(errorMsgService.serverError)
+    })
+  })
+}
+*/
+
+let getDistribution = function (token, projectId, request) {
+  return new Promise((resolve, reject) => {
+    // check if the token is valid
+    redisRepository.getAccountId(token).then(accountId => {
+      if(request.size === undefined || request.distribution === undefined) {
+        reject(errorMsgService.emptyInput)
+        return
+      }
+      return dataRepository.getDistribution(projectId, request)
     }).then(freeGame => {
       resolve(freeGame)
     }).catch(error => {
@@ -110,9 +129,7 @@ let getSurvivalRate = function (token, projectId, request) {
 }
 
 module.exports = {
-  getOverAll:      getOverAll,
-  getBaseGame:     getBaseGame,
-  getFreeGame:     getFreeGame,
+  getDistribution: getDistribution,
   getRTP:          getRTP,
   getTotalNetWin:  getTotalNetWin,
   getSurvivalRate: getSurvivalRate

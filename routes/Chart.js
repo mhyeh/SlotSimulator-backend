@@ -4,6 +4,7 @@ let chartService = require('../ChartGenerator/Services/ChartService')
 
 let router = express.Router()
 
+/*
 // get overall distribution
 router.get('/:id/overAll', (req, res, next) => {
   chartService.getOverAll(req.get('Authorization'), req.params.id, req.query).then(result => {
@@ -24,6 +25,15 @@ router.get('/:id/baseGame', (req, res, next) => {
 
 // get bonus game distribution
 router.get('/:id/freeGame', (req, res, next) => {
+  chartService.getFreeGame(req.get('Authorization'), req.params.id, req.query).then(result => {
+    res.status(200).json(result)
+  }).catch(error => {
+    res.status(400).json(error)
+  })
+})
+*/
+
+router.get('/:id/distribution', (req, res, next) => {
   chartService.getFreeGame(req.get('Authorization'), req.params.id, req.query).then(result => {
     res.status(200).json(result)
   }).catch(error => {

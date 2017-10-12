@@ -7,9 +7,7 @@ let projectRepository = require('./ProjectRepository')
 let model = require('../connect')
 
 // calculate payout distribution
-let calPayOutDistribution = function (tableIndex, projectId, request) {
-  let table = ['overall', 'basegame', 'freegame']
-
+let getDistribution = function (projectId, request) {
   let size          = request.size
   let distributions = JSON.parse(request.distribution)
 
@@ -28,7 +26,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
     // get the bet cost of project
     projectRepository.getProjectById(projectId).then(project => {
       // 計算每筆 payout 到小數點第一位 以及他的出現次數
-      return model.knex(table[tableIndex] + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
+      return model.knex(request.table + projectId).select(model.knex.raw('round((`netWin` / ? + 1) * 10) / 10 as payOut, count(*) as count', [project.betCost])).where('id', '<=', size).groupBy('payOut').orderBy('payOut', 'asc')
     }).then(rows => {
       let sum = 0
       let count = 0
@@ -91,6 +89,7 @@ let calPayOutDistribution = function (tableIndex, projectId, request) {
   })
 }
 
+/*
 // get overall distribution
 let getOverAll = function (projectId, request) {
   return new Promise((resolve, reject) => {
@@ -123,6 +122,7 @@ let getFreeGame = function (projectId, request) {
     })
   })
 }
+*/
 
 // get player experience (每 400 筆紀錄一次 RTP)
 let getRTP = function (projectId, request) {
@@ -247,9 +247,7 @@ let getSurvivalRate = function (projectId, request) {
 }
 
 module.exports = {
-  getOverAll:      getOverAll,
-  getBaseGame:     getBaseGame,
-  getFreeGame:     getFreeGame,
+  getDistribution: getDistribution,
   getRTP:          getRTP,
   getTotalNetWin:  getTotalNetWin,
   getSurvivalRate: getSurvivalRate
