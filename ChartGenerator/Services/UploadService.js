@@ -9,7 +9,6 @@ let uploadRepository = require('../Repositories/UploadRepository')
 let fileService     = require('./FileService')
 let errorMsgService = require('./ErrorMsgService')
 
-let appRoot    = path.join(path.dirname(require.main.filename), '../userProject/')
 let extension  = '.csv'
 let filesName  = ['baseSpinData', 'bonusSpinData', 'overallSpinData', 'overallSurvivalRate']
 let tablesName = ['basegame', 'freegame', 'overall', 'survivalrate']
@@ -22,7 +21,7 @@ let uploadFile = function(token, id, data) {
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
-      dir = accountId + '/' + id + '/result/'
+      dir = 'userProject/' + accountId + '/' + id + '/result/'
       return fileService.processFormData(data)
     }).then(result => {
       fields = result.fields
