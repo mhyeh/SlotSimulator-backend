@@ -22,7 +22,7 @@ let uploadFile = function(token, id, data) {
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
-      dir = appRoot + accountId + '/' + id + '/result/'
+      dir = accountId + '/' + id + '/result/'
       return fileService.processFormData(data)
     }).then(result => {
       fields = result.fields
