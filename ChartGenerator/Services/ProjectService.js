@@ -109,9 +109,9 @@ let create = function (token, body) {
       }
 
       return fileService.processFormData(body)
-    }).then((fields_, files_) => {
-      fields = fields_
-      files  = files_
+    }).then(result => {
+      fields = result.fields
+      files  = result.files
 
       for (let i of dataSet) {
         if (fields[i] === undefined) {
@@ -195,9 +195,9 @@ let update = function (token, id, body) {
       }
 
       return fileService.processFormData(body)
-    }).then((fields_, files_) => {
-      fields = fields_
-      files = files_
+    }).then(result => {
+      fields = result.fields
+      files = result.files
 
       for (let i of dataSet) {
         if (fields[i] === undefined) {

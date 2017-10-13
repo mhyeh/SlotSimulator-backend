@@ -81,8 +81,9 @@ let processFormData = function (data) {
         reject('file error')
         return
       }
+      resolve(fields)
     })
-    resolve({fileds: fields, files: files})
+    
   })
 }
 

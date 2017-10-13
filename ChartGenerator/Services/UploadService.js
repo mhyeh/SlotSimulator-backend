@@ -24,9 +24,9 @@ let uploadFile = function(token, id, data) {
     redisRepository.getAccountId(token).then(accountId => {
       dir = appRoot + accountId + '/' + id + '/result/'
       return fileService.processFormData(data)
-    }).then((fields_, files_) => {
-      fields = fields_
-      files  = files_
+    }).then(result => {
+      fields = result.fields
+      files  = result.files
       let promises = []
       for (let field of fields) {
         promises.push(fileService.moveFile(files[field.name].path, dir + fields.name + extension))
