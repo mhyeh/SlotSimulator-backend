@@ -27,11 +27,8 @@ let uploadFile = function(token, id, data) {
     }).then(result => {
       fields = result.fields
       files  = result.files
-      let promises = []
-      for (let field of fields) {
-        promises.push(fileService.moveFile(files[field.name].path, dir + fields.name + extension))
-      }
-      return Promise.all(promises)
+
+      return fileService.moveFile(files[fields.name].path, dir + fields.name + extension)
     }).then(() => {
       for (let index in filesName) {
         if (fields.name === filesName[index]) {
