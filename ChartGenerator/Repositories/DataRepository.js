@@ -89,41 +89,6 @@ let getDistribution = function (projectId, request) {
   })
 }
 
-/*
-// get overall distribution
-let getOverAll = function (projectId, request) {
-  return new Promise((resolve, reject) => {
-    calPayOutDistribution(0, projectId, request).then(result => {
-      resolve(result)
-    }).catch(() => {
-      reject()
-    })
-  })
-}
-
-// get base game distribution
-let getBaseGame = function (projectId, request) {
-  return new Promise((resolve, reject) => {
-    calPayOutDistribution(1, projectId, request).then(result => {
-      resolve(result)
-    }).catch(() => {
-      reject()
-    })
-  })
-}
-
-// get bonus game distribution
-let getFreeGame = function (projectId, request) {
-  return new Promise((resolve, reject) => {
-    calPayOutDistribution(2, projectId, request).then(result => {
-      resolve(result)
-    }).catch(() => {
-      reject()
-    })
-  })
-}
-*/
-
 // get player experience (每 400 筆紀錄一次 RTP)
 let getRTP = function (projectId, request) {
   return new Promise((resolve, reject) => {

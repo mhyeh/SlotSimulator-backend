@@ -5,62 +5,6 @@ let redisRepository = require('../Repositories/RedisRepository')
 
 let errorMsgService = require('./ErrorMsgService')
 
-/*
-//get overall distribution
-let getOverAll = function (token, projectId, request) {
-  return new Promise((resolve, reject) => {
-    // check if the token is valid
-    redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.distribution === undefined) {
-        reject(errorMsgService.emptyInput)
-        return
-      }
-      return dataRepository.getOverAll(projectId, request)
-    }).then(overAll => {
-      resolve(overAll)
-    }).catch(error => {
-      reject(errorMsgService.serverError)
-    })
-  })
-}
-
-//get base game distribution
-let getBaseGame = function (token, projectId, request) {
-  return new Promise((resolve, reject) => {
-    // check if the token is valid
-    redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.distribution === undefined) {
-        reject(errorMsgService.emptyInput)
-        return
-      }
-      return dataRepository.getBaseGame(projectId, request)
-    }).then(baseGame => {
-      resolve(baseGame)
-    }).catch(error => {
-      reject(errorMsgService.serverError)
-    })
-  })
-}
-
-//get bonus game distribution
-let getFreeGame = function (token, projectId, request) {
-  return new Promise((resolve, reject) => {
-    // check if the token is valid
-    redisRepository.getAccountId(token).then(accountId => {
-      if(request.size === undefined || request.distribution === undefined) {
-        reject(errorMsgService.emptyInput)
-        return
-      }
-      return dataRepository.getFreeGame(projectId, request)
-    }).then(freeGame => {
-      resolve(freeGame)
-    }).catch(error => {
-      reject(errorMsgService.serverError)
-    })
-  })
-}
-*/
-
 let getDistribution = function (token, projectId, request) {
   return new Promise((resolve, reject) => {
     // check if the token is valid

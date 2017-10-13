@@ -1,8 +1,9 @@
-let Promise = require('bluebird')
-let path    = require('path')
-let fs      = Promise.promisifyAll(require('fs'))
-let mkdirp  = Promise.promisifyAll(require('mkdirp'))
-let rimraf  = Promise.promisify(require('rimraf'))
+let Promise    = require('bluebird')
+let path       = require('path')
+let fs         = Promise.promisifyAll(require('fs'))
+let mkdirp     = Promise.promisifyAll(require('mkdirp'))
+let rimraf     = Promise.promisify(require('rimraf'))
+let formidable = require('formidable')
 
 let appRoot = path.join(path.dirname(require.main.filename), '../')
 
@@ -67,11 +68,43 @@ let deleteFolder = function (path) {
   })
 }
 
+let processFormData = function (data) {
+  return new Promise((resolve, reject) => {
+    let form = new formidable.IncomingForm()
+    form.encoding       = 'utf-8'
+    form.keepExtensions = true
+    form.multiples      = false
+
+    form.parse(data, (err, fields, files) => {
+      if (err) {
+        console.log('error')
+        reject('file error')
+        return
+      }
+    })
+    resolve({fileds: fields, files: files})
+  })
+}
+
+let moveFile = function (from, to) {
+  return new Promise((resolve, reject) => {
+    fs.rename(from, path.join(appRoot, to), (err) => {
+      if (err) {
+        reject('file error')
+        return
+      }
+      resolve()
+    })
+  })
+}
+
 module.exports = {
-  createFile:   createFile,
-  deleteFile:   deleteFile,
-  readFile:     readFile,
-  createFolder: createFolder,
-  deleteFolder: deleteFolder
+  createFile:      createFile,
+  deleteFile:      deleteFile,
+  readFile:        readFile,
+  createFolder:    createFolder,
+  deleteFolder:    deleteFolder,
+  processFormData: processFormData,
+  moveFile:        moveFile
 }
 

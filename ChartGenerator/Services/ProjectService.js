@@ -8,10 +8,12 @@ let fileService     = require('./FileService')
 let errorMsgService = require('./ErrorMsgService')
 
 let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'symbol', 'reels', 'rows', 'betCost']
-let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr']
+let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
+let settings = ['parSheet', 'distribution', 'rtp', 'totalNetWin', 'survivalRate', 'othersInfo']
 
-let extension = '.csv'
-let folder    = './userProject/'
+let csv    = '.csv'
+let json   = '.json'
+let folder = './userProject/'
 
 // get all project
 let getAllProject = function (token) {
@@ -39,18 +41,7 @@ let getProjectById = function (token, id) {
     redisRepository.getAccountId(token).then(accountId => {
       return projectRepoisitory.getProjectById(id)
     }).then(projectInfo => {
-      //之後不會用到 要改寫
-      data = projectInfo
-      let readFile = {}
-      for (let i of fileName) {
-        readFile[i] = fileService.readFile(data[i])
-      }
-      return Promise.props(readFile)
-    }).then(fileContext => {
-      for (let i of fileName) {
-        data[i] = fileContext[i]
-      }
-      resolve(data)
+      resolve(projectInfo)
     }).catch(error => {
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
@@ -104,9 +95,11 @@ let getProjectTypeById = function (token, id) {
 // create a new project (需要改寫)
 let create = function (token, body) {
   let userId
-  let data = {}
+  let data
   let id
   let path
+  let fields
+  let files
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
@@ -115,23 +108,28 @@ let create = function (token, body) {
         userId: userId
       }
 
+      return fileService.processFormData(body)
+    }).then((fields_, files_) => {
+      fields = fields_
+      files  = files_
+
       for (let i of dataSet) {
-        if (body[i] === undefined) {
+        if (fields[i] === undefined) {
           reject(errorMsgService.emptyInput)
           return
         } else {
-          data[i] = body[i]
+          data[i] = fields[i]
         }
       }
 
       for (let i of fileName) {
-        if (body[i] === undefined) {
-          reject(errorMsgService.emptyInput)
-          return
-        } else {
-          data[i] = './'
-        }
+        data[i] = './'
       }
+
+      for (let i of settings) {
+        data[i] = './'
+      }
+
       return projectTypeRepository.getTypeById(data.typeId)
     }).then(() => {
       return projectRepoisitory.createProject(data)
@@ -144,15 +142,23 @@ let create = function (token, body) {
     }).then(() => {
       return fileService.createFolder(path + '/result')
     }).then(() => {
+      let promise = []
+
       for (let i of fileName) {
-        data[i] = path + '/' + i + extension
+        if (files[i] !== undefined) {
+          data[i] = path + '/' + i + csv
+          promise.push(fileService.moveFile(files[i].path, data[i]))
+        }
+      }
+
+      for (let i of settings) {
+        if (files[i] !== undefined) {
+          data[i] = path + '/' + i + json
+          promise.push(fileService.moveFile(files[i].path, data[i]))
+        }
       }
       
-      let promise = []
       promise.push(projectRepoisitory.updateProject(id, data))
-      for (let i of fileName) {
-        promise.push(fileService.createFile(data[i], body[i]))
-      }
 
       return Promise.all(promise)
     }).then(() => {
@@ -174,41 +180,53 @@ let create = function (token, body) {
 // update project (需要改寫)
 let update = function (token, id, body) {
   let data
+  let userId
+  let path
+  let fields
+  let files
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
-      let userId = accountId
-      let path   = folder + userId + '/' + id
+      userId = accountId
+      path   = folder + userId + '/' + id
   
       data = {
         userId: userId
       }
-  
+
+      return fileService.processFormData(body)
+    }).then((fields_, files_) => {
+      fields = fields_
+      files = files_
+
       for (let i of dataSet) {
-        if (body[i] === undefined) {
+        if (fields[i] === undefined) {
           reject(errorMsgService.emptyInput)
           return
         } else {
-          data[i] = body[i]
+          data[i] = fields[i]
         }
       }
-  
-      for (let i of fileName) {
-        if (body[i] === undefined) {
-          reject(errorMsgService.emptyInput)
-          return
-        } else {
-          data[i] = path + '/' + i + extension
-        }
-      }
-      
+
       return projectTypeRepository.getTypeById(data.typeId)
     }).then(() => {
       let promise = []
-      promise.push(projectRepoisitory.updateProject(id, data))
+
       for (let i of fileName) {
-        promise.push(fileService.createFile(data[i], body[i]))
+        if (files[i] !== undefined) {
+          data[i] = path + '/' + i + csv
+          promise.push(fileService.moveFile(files[i].path, data[i]))
+        }
       }
+
+      for (let i of settings) {
+        if (files[i] !== undefined) {
+          data[i] = path + '/' + i + json
+          promise.push(fileService.moveFile(files[i].path, data[i]))
+        }
+      }
+
+      promise.push(projectRepoisitory.updateProject(id, data))
     
       return Promise.all(promise)
     }).then(() => {
