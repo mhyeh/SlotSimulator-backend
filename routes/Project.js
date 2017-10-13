@@ -24,7 +24,7 @@ router.get('/:id', (req, res, next) => {
 
 // create a new project
 router.post('/', (req, res, next) => {
-  projectService.create(req.get('Authorization'), req.body).then(() => {
+  projectService.create(req.get('Authorization'), req).then(() => {
     res.status(200).json({message: 'success'})
   }).catch(error => {
     res.status(400).json(error)
@@ -33,7 +33,7 @@ router.post('/', (req, res, next) => {
 
 // update project
 router.put('/:id', (req, res, next) => {
-  projectService.update(req.get('Authorization'), req.params.id, req.body).then(() => {
+  projectService.update(req.get('Authorization'), req.params.id, req).then(() => {
     res.status(200).json({message: 'success'})
   }).catch(error => {
     res.status(400).json(error)
