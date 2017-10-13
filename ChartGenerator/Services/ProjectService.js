@@ -7,8 +7,8 @@ let projectTypeRepository = require('../Repositories/ProjectTypeRepository')
 let fileService     = require('./FileService')
 let errorMsgService = require('./ErrorMsgService')
 
-let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'symbol', 'reels', 'rows', 'betCost']
-let fileName = ['baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
+let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
+let fileName = ['symbol', 'baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
 let settings = ['parSheet', 'distribution', 'rtp', 'totalNetWin', 'survivalRate', 'othersInfo']
 
 let csv    = '.csv'
