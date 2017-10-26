@@ -18,8 +18,8 @@ let getDistribution = function (token, projectId, request) {
         return
       }
       return dataRepository.getDistribution(projectId, request)
-    }).then(freeGame => {
-      resolve(freeGame)
+    }).then(distribution => {
+      resolve(distribution)
     }).catch(error => {
       reject(errorMsgService.serverError)
     })
