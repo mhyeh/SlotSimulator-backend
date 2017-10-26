@@ -5,7 +5,6 @@ let dataService = require('../ChartGenerator/Services/DataService')
 let router = express.Router()
 
 router.get('chart/:id/distribution', (req, res, next) => {
-  console.log(1)
   dataService.getDistribution(req.get('Authorization'), req.params.id, req.query).then(result => {
     res.status(200).json(result)
   }).catch(error => {
