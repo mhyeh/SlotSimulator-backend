@@ -9,10 +9,8 @@ let errorMsgService = require('./ErrorMsgService')
 
 let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
 let fileName = ['symbol', 'baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
-let settings = ['parSheet', 'distribution', 'rtp', 'totalNetWin', 'survivalRate', 'othersInfo']
 
 let csv    = '.csv'
-let json   = '.json'
 let folder = './userProject/'
 
 // get all project
@@ -92,7 +90,7 @@ let getProjectTypeById = function (token, id) {
   })
 }
 
-// create a new project (需要改寫)
+// create a new project 
 let create = function (token, body) {
   let userId
   let data
@@ -126,9 +124,8 @@ let create = function (token, body) {
         data[i] = './'
       }
 
-      for (let i of settings) {
-        data[i] = './'
-      }
+      data.config    = './'
+      data.gameLogic = './'
 
       return projectTypeRepository.getTypeById(data.typeId)
     }).then(() => {
@@ -150,12 +147,14 @@ let create = function (token, body) {
           promise.push(fileService.moveFile(files[i].path, data[i]))
         }
       }
-
-      for (let i of settings) {
-        if (files[i] !== undefined) {
-          data[i] = path + '/' + i + json
-          promise.push(fileService.moveFile(files[i].path, data[i]))
-        }
+      
+      if (files.config !== undefined) {
+        data.config = path + '/config.js'
+        promise.push(fileService.moveFile(files.config.path, data.config))
+      }
+      if (files.gameLogic !== undefined) {
+        data.gameLogic = path + '/gameLogic.dll'
+        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
       
       promise.push(projectRepoisitory.updateProject(id, data))
@@ -177,7 +176,7 @@ let create = function (token, body) {
   })
 }
 
-// update project (需要改寫)
+// update project 
 let update = function (token, id, body) {
   let data
   let userId
@@ -219,11 +218,13 @@ let update = function (token, id, body) {
         }
       }
 
-      for (let i of settings) {
-        if (files[i] !== undefined) {
-          data[i] = path + '/' + i + json
-          promise.push(fileService.moveFile(files[i].path, data[i]))
-        }
+      if (files.config !== undefined) {
+        data.config = path + '/config.js'
+        promise.push(fileService.moveFile(files.config.path, data.config))
+      }
+      if (files.gameLogic !== undefined) {
+        data.gameLogic = path + '/gameLogic.dll'
+        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
       promise.push(projectRepoisitory.updateProject(id, data))
@@ -267,6 +268,22 @@ let deleteProject = function (token, id) {
   })
 }
 
+let getConfig = function (token, id) {
+  let userId
+  return new Promise((resolve, reject) => {
+    redisRepository.getAccountId(token).then(accountId => {
+      let config = require('../../userProject/${accountId}/${id}/config.js')
+      resolve(config.config)
+    }).catch(error => {
+      if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
 module.exports = {
   getAllProject:      getAllProject,
   getProjectById:     getProjectById,
@@ -274,5 +291,6 @@ module.exports = {
   getProjectTypeById: getProjectTypeById,
   create:             create,
   update:             update,
-  deleteProject:      deleteProject
+  deleteProject:      deleteProject,
+  getConfig:          getConfig
 }

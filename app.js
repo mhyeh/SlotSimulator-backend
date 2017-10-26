@@ -6,12 +6,11 @@ let bodyParser   = require('body-parser')
 let favicon      = require('serve-favicon')
 let cors         = require('cors')
 
-let Account     = require('./routes/Account')
-let Project     = require('./routes/Project')
-let ProjectType = require('./routes/ProjectType')
-let Chart       = require('./routes/Chart')
-let Table       = require('./routes/Table')
-let FileUpload  = require('./routes/FileUpload')
+let Account      = require('./routes/Account')
+let Project      = require('./routes/Project')
+let ProjectType  = require('./routes/ProjectType')
+let AnalysisData = require('./routes/AnalysisData')
+let FileUpload   = require('./routes/FileUpload')
 
 let RedisRepository = require('./ChartGenerator/Repositories/RedisRepository')
 
@@ -38,11 +37,10 @@ app.use((req, res, next) => {
   })
 })
 
-app.use('/project',     Project)
-app.use('/projectType', ProjectType)
-app.use('/chart',       Chart)
-app.use('/table',       Table)
-app.use('/fileUpload',  FileUpload)
+app.use('/project',      Project)
+app.use('/projectType',  ProjectType)
+app.use('/analysisData', AnalysisData)
+app.use('/fileUpload',   FileUpload)
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {

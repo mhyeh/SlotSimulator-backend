@@ -49,4 +49,12 @@ router.delete('/:id', (req, res, next) => {
   })
 })
 
+router.get('/:id/getConfig', (req, res, next) => {
+  projectService.getConfig(req.get('Authorization'), req.params.id).then(config => {
+    res.status(200).json(config)
+  }).catch(error => {
+    res.status(400).json(error)
+  })
+})
+
 module.exports = router
