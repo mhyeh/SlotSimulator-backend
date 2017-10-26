@@ -272,7 +272,8 @@ let getConfig = function (token, id) {
   let userId
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
-      let config = require('../../userProject/${accountId}/${id}/config')
+      let path = '../../userProject/' + accountId + '/' + id + '/config'
+      let config = require(path)
       resolve(config.config)
     }).catch(error => {
       if (error === 'token expired') {
