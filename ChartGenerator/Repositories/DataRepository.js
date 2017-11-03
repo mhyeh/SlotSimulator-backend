@@ -211,6 +211,17 @@ let getSurvivalRate = function (projectId, request) {
   })
 }
 
+let getRawData = function (projectId, dataFormat) {
+  return new Promise((resolve, reject) => {
+    model.knex('others' + projectId).select().where('name', dataFormat.name),then(rows => {
+      
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
 module.exports = {
   getDistribution: getDistribution,
   getRTP:          getRTP,

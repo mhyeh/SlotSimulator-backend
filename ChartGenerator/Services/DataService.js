@@ -3,6 +3,7 @@ let Promise = require('bluebird')
 let dataRepository  = require('../Repositories/DataRepository')
 let redisRepository = require('../Repositories/RedisRepository')
 
+let projectService  = require('./ProjectService')
 let fileService     = require('./FileService')
 let errorMsgService = require('./ErrorMsgService')
 
@@ -86,6 +87,34 @@ let getTable = function (token, id, type) {
       resolve(result)
     }).catch(error => {
       if (error === 'token expired') {
+        reject(errorMsgService.tokenExpired)
+      } else if (error === 'file error') {
+        reject(errorMsgService.fsError)
+      } else {
+        reject(errorMsgService.serverError)
+      }
+    })
+  })
+}
+
+let getOthers = function (token, id, info) {
+  let configs = null
+  return new Promise((resolve, reject) => {
+    projectService.getConfig(token, id).then(config => {
+      configs = config[info.page]
+      let promise = {}
+      for (let data of configs.data) {
+        promise[data.name] = dataRepository.getRawData(id, data)
+      }
+      return Promise.props(promise)
+    }).then(data => {
+      return configs.getData(data, info.setting)
+    }).then(data => {
+      return configs.process(data, configs.renderData)
+    }).then(result => {
+      resolve(result)
+    }).catch(error => {
+      if (error === 'token expired' || error.error !== undefined && error.error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'file error') {
         reject(errorMsgService.fsError)
