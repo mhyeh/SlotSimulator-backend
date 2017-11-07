@@ -4,6 +4,8 @@ let bigNumber = require('bignumber.js')
 
 let projectRepository = require('./ProjectRepository')
 
+let fileService = require('../Services/FileService')
+
 let model = require('../connect')
 
 // calculate payout distribution
@@ -214,11 +216,76 @@ let getSurvivalRate = function (projectId, request) {
 let getRawData = function (projectId, dataFormat) {
   return new Promise((resolve, reject) => {
     model.knex('others' + projectId).select().where('name', dataFormat.name),then(rows => {
-      
+      return fileService.readFile(rows[0], 'r')
+    }).then(data => {
+      let rawData = new Buffer(data)
+      let formats = dataFormat.format
+      let result  = {}
+
+      return parseBinary(rawData, formats, 0, 0, result)
+    }).then(result => {
+      resolve(result.result)
     }).catch(error => {
       console.log(error)
       reject()
     })
+  })
+}
+
+let parseBinary = function(rawData, format, deep, index, result) {
+  return new Promise((resolve, reject) => {
+    if (format.length <= deep) {
+      resolve({result: result, index: index})
+      return
+    }
+
+    if (format[deep].type === 'int') {
+      result[format[deep].name] = rawData.readInt32LE(index)
+      resolve(parseBinary(rawData, format, deep + 1, index + 4, result))
+    } else if (format[deep].type === 'double') {
+      result[format[deep].name] = rawData.readDoubleLE(index)
+      resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
+    } else if (format[deep].type === 'string') {
+      result[format[deep].name] = rawData.toString('ascii', index, index + format[deep].length)
+      resolve(parseBinary(rawData, format, deep + 1, index + format[deep].length, result))
+    } else if (format[deep].type === 'object') {
+      parseBinary(rawData, format[deep].content, 0, index, {}).then(res => {
+        result[format[deep].name] = res.result
+        resolve(parseBinary(rawData, format, deep + 1, res.index, result))
+      })
+    } else if (format[deep].type === 'array') {
+      (function parseArray(arr) {
+        return new Promise((resolve, reject) => {
+          if (format[deep].length !== undefined) {
+            (function loop(i) {
+              parseBinary(rawData, format[deep].content, 0, index, {}).then(res => {
+                arr.push(res.result[format[deep].content[0].name])
+                index = res.index
+                if (i < format[deep].length) {
+                  loop(i + 1)
+                } else {
+                  resolve(arr)
+                }
+              })
+            })(1)
+            
+          } else {
+            (function loop() {
+              parseBinary(rawData, format[deep].content, 0, index, {}).then(res => {
+                arr.push(res.result[format[deep].content[0].name])
+                index = res.index
+                loop()
+              }).catch(() => {
+                resolve(arr)
+              })
+            })()
+          }
+        })      
+      })([]).then(res => {
+        result[format[deep].name] = res
+        resolve(parseBinary(rawData, format, deep + 1, index, result))
+      })
+    }
   })
 }
 

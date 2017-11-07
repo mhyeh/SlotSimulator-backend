@@ -82,7 +82,7 @@ let getTable = function (token, id, type) {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       let path = folder + accountId + '/' + id  + '/result/'
-      return fileService.readFile(path + type + 'Par' + extension)
+      return fileService.readFile(path + type + 'Par' + extension, 'utf8')
     }).then(result => {
       resolve(result)
     }).catch(error => {
