@@ -293,5 +293,6 @@ module.exports = {
   getDistribution: getDistribution,
   getRTP:          getRTP,
   getTotalNetWin:  getTotalNetWin,
-  getSurvivalRate: getSurvivalRate
+  getSurvivalRate: getSurvivalRate,
+  getRawData:      getRawData
 }
