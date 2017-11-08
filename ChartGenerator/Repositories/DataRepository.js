@@ -215,7 +215,7 @@ let getSurvivalRate = function (projectId, request) {
 
 let getRawData = function (projectId, dataFormat) {
   return new Promise((resolve, reject) => {
-    model.knex('others' + projectId).select().where('name', dataFormat.name),then(rows => {
+    model.knex('others' + projectId).select().where('name', dataFormat.name).then(rows => {
       return fileService.readFile(rows[0], 'r')
     }).then(data => {
       let rawData = new Buffer(data)
