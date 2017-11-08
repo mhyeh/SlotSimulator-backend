@@ -102,7 +102,7 @@ let getOthers = function (token, id, info) {
   return new Promise((resolve, reject) => {
     redisRepository.getAccountId(token).then(accountId => {
       let path = '../../userProject/' + accountId + '/' + id + '/config'
-      configs = require(path)[info.page]
+      configs = require(path).config[info.page]
       let promise = {}
       for (let data of configs.data) {
         promise[data.name] = dataRepository.getRawData(id, data)
