@@ -48,7 +48,7 @@ router.get('/table/:id/:type', (req, res, next) => {
 })
 
 router.get('/others/:id', (req, res, next) => {
-  dataService.getOthers(req.get('Authorization'), req.params.id, req.query.config).then(result => {
+  dataService.getOthers(req.get('Authorization'), req.params.id, JSON.parse(req.query.config)).then(result => {
     res.status(200).json(result)
   }).catch(error => {
     res.status(400).json(error)
