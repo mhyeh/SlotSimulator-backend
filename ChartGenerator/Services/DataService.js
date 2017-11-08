@@ -100,8 +100,9 @@ let getTable = function (token, id, type) {
 let getOthers = function (token, id, info) {
   let configs = null
   return new Promise((resolve, reject) => {
-    projectService.getConfig(token, id).then(config => {
-      configs = config[info.page]
+    redisRepository.getAccountId(token).then(accountId => {
+      let path = '../../userProject/' + accountId + '/' + id + '/config'
+      configs = require(path)[info.page]
       let promise = {}
       for (let data of configs.data) {
         promise[data.name] = dataRepository.getRawData(id, data)
