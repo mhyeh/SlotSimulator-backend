@@ -33,9 +33,15 @@ let deleteFile = function (name) {
 }
 
 // read a file
-let readFile = function (name, type) {
+let readFile = function (name, type = undefined) {
   return new Promise((resolve, reject) => {
-    fs.readFileAsync(path.join(appRoot, name), type).then(context => {
+    let promise
+    if (type !== undefined) {
+      promise = fs.readFileAsync(path.join(appRoot, name), type)
+    } else {
+      promise = fs.readFileAsync(path.join(appRoot, name))
+    }
+    promise.then(context => {
       resolve(context)
     }).catch(error => {
       console.log(error)
