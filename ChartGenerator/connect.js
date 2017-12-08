@@ -1,8 +1,8 @@
 // connect database
-let config = require('../config/database')
+let database = require('../config/config').dev.database
 let knex = require('knex')({
   client: 'mysql',
-  connection: config.dev,
+  connection: database,
   pool: {
     min: 0,
     max: 10

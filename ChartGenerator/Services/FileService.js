@@ -94,12 +94,24 @@ let processFormData = function (data) {
 
 let moveFile = function (from, to) {
   return new Promise((resolve, reject) => {
-    fs.rename(from, path.join(appRoot, to), (err) => {
+    fs.rename(from, path.join(appRoot, to), err => {
       if (err) {
         reject('file error')
         return
       }
       resolve()
+    })
+  })
+}
+
+let copyFile = function (from, to) {
+  return new Promise((resovle, reject) => {
+    fs.copyFile(from, to, err => {
+      if (err) {
+        reject('file error')
+        return
+      }
+      resovle()
     })
   })
 }
@@ -111,6 +123,7 @@ module.exports = {
   createFolder:    createFolder,
   deleteFolder:    deleteFolder,
   processFormData: processFormData,
-  moveFile:        moveFile
+  moveFile:        moveFile,
+  copyFile:        copyFile
 }
 
