@@ -5,29 +5,15 @@ let redisRepository       = require('../Repositories/RedisRepository')
 let projectRepoisitory    = require('../Repositories/ProjectRepository')
 let projectTypeRepository = require('../Repositories/ProjectTypeRepository')
 
-let fileService     = require('./FileService')
-let errorMsgService = require('./ErrorMsgService')
-
-let config = require('../../config/config')
+let simulationService = require('./SimulationService')
+let fileService       = require('./FileService')
+let errorMsgService   = require('./ErrorMsgService')
 
 let dataSet  = ['name', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
 let fileName = ['symbol', 'baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
 
 let csv    = '.csv'
 let folder = './userProject/'
-
-let makeFile = function(path) {
-  return Promise((resolve, reject) => {
-    child_process.exec('sh ' + config.cuda.makeFile + ' ' + path, (err, stdout, stderr) => {
-      if (err) {
-        console.log(err)
-        reject(err)
-        return
-      }
-      resolve()
-    })
-  })
-}
 
 // get all project
 let getAllProject = function (token) {
@@ -196,7 +182,9 @@ let create = function (token, body) {
 
       return Promise.all(promise)
     }).then(() => {
-      return makeFile(path)
+      return simulationService.makeFile(path)
+    }).then(() => {
+      return simulationService.simulation(path)
     }).then(() => {
       resolve()
     }).catch(error => {
@@ -287,7 +275,9 @@ let update = function (token, id, body) {
     
       return Promise.all(promise)
     }).then(() => {
-      return makeFile(path)
+      return simulationService.makeFile(path)
+    }).then(() => {
+      return simulationService.simulation(path)
     }).then(() => {
       resolve()
     }).catch(error => {

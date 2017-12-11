@@ -79,7 +79,7 @@ let processFormData = function (data) {
     let form = new formidable.IncomingForm()
     form.encoding       = 'utf-8'
     form.keepExtensions = true
-    form.multiples      = false
+    form.multiples      = true
 
     form.parse(data, (err, fields, files) => {
       if (err) {

@@ -27,6 +27,7 @@ let uploadFile = function(token, id, data) {
       fields = result.fields
       files  = result.files
 
+      console.log(files)
       return fileService.moveFile(files[fields.name].path, dir + fields.name + extension)
     }).then(() => {
       for (let index in filesName) {
