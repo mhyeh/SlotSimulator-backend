@@ -87,8 +87,6 @@ let processFormData = function (data) {
         reject('file error')
         return
       }
-      console.log(fields)
-      console.log(files)
       resolve({fields: fields, files: files})
     })
   })
