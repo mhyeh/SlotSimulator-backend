@@ -81,6 +81,7 @@ let processFormData = function (data) {
     form.keepExtensions = true
     form.multiples      = true
 
+    console.log(data)
     form.parse(data, (err, fields, files) => {
       if (err) {
         console.log('error')
