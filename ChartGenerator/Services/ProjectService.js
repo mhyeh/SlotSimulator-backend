@@ -134,21 +134,21 @@ let create = function (token, body) {
       return projectRepoisitory.getNewestProject(userId)
     }).then(projectInfo => {
       id = projectInfo.id
-      path = folder + userId + '/' + id
+      path = folder + userId + '/' + id + '/'
       return fileService.createFolder(path)
     }).then(() => {
-      return fileService.createFolder(path + '/result')
+      return fileService.createFolder(path + 'result')
     }).then(() => {
       let promise = []
       for (let i of fileName) {
         if (files[i] !== undefined) {
           if (!Array.isArray(files[i])) {
-            data[i] = path + '/' + i + csv
+            data[i] = path + i + csv
             promise.push(fileService.moveFile(files[i].path, data[i]))
           } else {
             data[i] = ''
             for (let j in files[i]) {
-              let filePath = path + '/' + i + j + csv
+              let filePath = path + i + j + csv
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
             }
@@ -158,11 +158,11 @@ let create = function (token, body) {
       }
       
       if (files.config !== undefined) {
-        data.config = path + '/config.js'
+        data.config = path + 'config.js'
         promise.push(fileService.moveFile(files.config.path, data.config))
       }
       if (files.gameLogic !== undefined) {
-        data.gameLogic = path + '/gameLogic.cu'
+        data.gameLogic = path + 'gameLogic.cu'
         promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
@@ -188,7 +188,7 @@ let create = function (token, body) {
         }
         inputFile = inputFile.slice(0, -1)
       }
-      promise.push(fileService.createFile(path + '/input.csv', inputFile))
+      promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
 
       return Promise.all(promise)
@@ -223,7 +223,7 @@ let update = function (token, id, body) {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
-      path   = folder + userId + '/' + id
+      path   = folder + userId + '/' + id + '/'
   
       data = {
         userId: userId
@@ -247,17 +247,17 @@ let update = function (token, id, body) {
 
       for (let i of fileName) {
         if (files[i] !== undefined) {
-          data[i] = path + '/' + i + csv
+          data[i] = path + i + csv
           promise.push(fileService.moveFile(files[i].path, data[i]))
         }
       }
 
       if (files.config !== undefined) {
-        data.config = path + '/config.js'
+        data.config = path + 'config.js'
         promise.push(fileService.moveFile(files.config.path, data.config))
       }
       if (files.gameLogic !== undefined) {
-        data.gameLogic = path + '/gameLogic.cu'
+        data.gameLogic = path + 'gameLogic.cu'
         promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
@@ -281,7 +281,7 @@ let update = function (token, id, body) {
           inputFile += ','
         }
       }
-      promise.push(fileService.createFile(path + '/input.csv', inputFile))
+      promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
     
       return Promise.all(promise)

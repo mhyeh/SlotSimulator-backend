@@ -8,7 +8,7 @@ let config = require('../../config/config').dev.cuda
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
     console.log(config)
-    child_process.exec('sudo sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path, (err, stdout, stderr) => {
+    child_process.exec('bash ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path, (err, stdout, stderr) => {
       if (err) {
         console.log(err)
         reject(err)
