@@ -3,11 +3,11 @@ let child_process = require('child_process')
 
 let errorMsgService = require('./ErrorMsgService')
 
-let config = require('../../config/config')
+let config = require('../../config/config').dev.cuda
 
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
-    child_process.exec('sh ' + config.dev.cuda.makeFile + ' ' + path, (err, stdout, stderr) => {
+    child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path, (err, stdout, stderr) => {
       if (err) {
         console.log(err)
         reject(err)
