@@ -148,6 +148,7 @@ let create = function (token, body) {
           } else {
             data[i] = ''
             for (let j in files[i]) {
+              console.log(files[i][j])
               let filePath = path + '/' + i + j + csv
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
