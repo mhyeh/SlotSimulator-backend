@@ -142,6 +142,8 @@ let create = function (token, body) {
       let promise = []
       for (let i of fileName) {
         if (files[i] !== undefined) {
+          console.log(files[i])
+          console.log(Array.isArray(files[i]))
           if (Array.isArray(files[i])) {
             data[i] = path + '/' + i + csv
             promise.push(fileService.moveFile(files[i].path, filePath))
