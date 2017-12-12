@@ -148,13 +148,11 @@ let create = function (token, body) {
           } else {
             data[i] = ''
             for (let j in files[i]) {
-              console.log(files[i][j])
               let filePath = path + '/' + i + j + csv
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
             }
             data[i] = data[i].slice(0, -1)
-            console.log(data[i])
           }
         }
       }
@@ -175,18 +173,20 @@ let create = function (token, body) {
       inputFile += '\n'
       for (let i of ['', '', '', 'stops', 'payTable', 'attr', 'basePattern']) {
         if (files[i] !== undefined) {
-          inputFile += ',' + i + csv
+          inputFile += i + csv + ','
         } else {
           inputFile += ','
         }
+        inputFile = inputFile.slice(0, -1)
       }
       inputFile += '\n'
       for (let i of ['', '', '', 'stops', 'payTable', '', 'bonusPattern']) {
         if (files[i] !== undefined) {
-          inputFile += ',' + i + csv
+          inputFile += i + csv + ','
         } else {
           inputFile += ','
         }
+        inputFile = inputFile.slice(0, -1)
       }
       promise.push(fileService.createFile(path + '/input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))

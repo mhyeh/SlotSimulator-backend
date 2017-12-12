@@ -6,7 +6,7 @@ let errorMsgService = require('./ErrorMsgService')
 let config = require('../../config/config')
 
 let makeFile = function (path) {
-  return Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     child_process.exec('sh ' + config.cuda.makeFile + ' ' + path, (err, stdout, stderr) => {
       if (err) {
         console.log(err)
@@ -19,7 +19,7 @@ let makeFile = function (path) {
 }
 
 let simulation = function (path, simIndex) {
-  return Promise((resolve, reject) => {
+  return new Promise((resolve, reject) => {
     child_process.exec(path + 'Simulation ' + path + 'input.csv', (err, stdout, stderr) => {
       if (err) {
         console.log(err)
