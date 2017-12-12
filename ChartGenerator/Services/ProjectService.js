@@ -199,7 +199,6 @@ let create = function (token, body) {
     }).then(() => {
       resolve()
     }).catch(error => {
-      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'Project type error') {

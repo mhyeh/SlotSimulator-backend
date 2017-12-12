@@ -7,7 +7,7 @@ let config = require('../../config/config')
 
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
-    child_process.exec('sh ' + config.cuda.makeFile + ' ' + path, (err, stdout, stderr) => {
+    child_process.exec('sh ' + config.dev.cuda.makeFile + ' ' + path, (err, stdout, stderr) => {
       if (err) {
         console.log(err)
         reject(err)
