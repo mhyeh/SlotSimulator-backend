@@ -140,9 +140,9 @@ let create = function (token, body) {
       return fileService.createFolder(path + '/result')
     }).then(() => {
       let promise = []
-      console.log(files)
       for (let i of fileName) {
         if (files[i] !== undefined) {
+          console.log(files[i])
           data[i] = ''
           for (let j in files[i]) {
             let filePath = path + '/' + i + j + csv
@@ -194,6 +194,7 @@ let create = function (token, body) {
     }).then(() => {
       resolve()
     }).catch(error => {
+      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'Project type error') {
