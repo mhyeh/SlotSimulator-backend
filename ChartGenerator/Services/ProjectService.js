@@ -10,7 +10,7 @@ let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
 let dataSet  = ['name', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
-let fileName = ['symbol', 'baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
+let fileName = ['symbol', 'stops', 'payTable', 'attr', 'basePattern', 'bonusPattern']
 
 let csv    = '.csv'
 let folder = './userProject/'
@@ -143,12 +143,14 @@ let create = function (token, body) {
 
       for (let i of fileName) {
         if (files[i] !== undefined) {
+          data[i] = ''
           for (let j in files[i]) {
             let filePath = path + '/' + i + j + csv
             data[i] += filePath + ','
             promise.push(fileService.moveFile(files[i][j].path, filePath))
           }
           data[i] = data[i].slice(0, -1)
+          console.log(data[i])
         }
       }
       
@@ -166,7 +168,7 @@ let create = function (token, body) {
         inputFile += ',' + data[i]
       }
       inputFile += '\n'
-      for (let i of ['', '', '', 'baseStops', 'basePayTable', 'attr', 'basePattern']) {
+      for (let i of ['', '', '', 'stops', 'payTable', 'attr', 'basePattern']) {
         if (files[i] !== undefined) {
           inputFile += ',' + i + csv
         } else {
@@ -174,7 +176,7 @@ let create = function (token, body) {
         }
       }
       inputFile += '\n'
-      for (let i of ['', '', '', 'bonusStops', 'bonusPayTable', '', 'bonusPattern']) {
+      for (let i of ['', '', '', 'stops', 'payTable', '', 'bonusPattern']) {
         if (files[i] !== undefined) {
           inputFile += ',' + i + csv
         } else {
