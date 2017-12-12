@@ -142,15 +142,19 @@ let create = function (token, body) {
       let promise = []
       for (let i of fileName) {
         if (files[i] !== undefined) {
-          console.log(files[i])
-          data[i] = ''
-          for (let j in files[i]) {
-            let filePath = path + '/' + i + j + csv
-            data[i] += filePath + ','
-            promise.push(fileService.moveFile(files[i][j].path, filePath))
+          if (files[i].isArray) {
+            data[i] = path + '/' + i + csv
+            promise.push(fileService.moveFile(files[i].path, filePath))
+          } else {
+            data[i] = ''
+            for (let j in files[i]) {
+              let filePath = path + '/' + i + j + csv
+              data[i] += filePath + ','
+              promise.push(fileService.moveFile(files[i][j].path, filePath))
+            }
+            data[i] = data[i].slice(0, -1)
+            console.log(data[i])
           }
-          data[i] = data[i].slice(0, -1)
-          console.log(data[i])
         }
       }
       
