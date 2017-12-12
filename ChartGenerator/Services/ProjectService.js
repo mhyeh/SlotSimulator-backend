@@ -140,7 +140,7 @@ let create = function (token, body) {
       return fileService.createFolder(path + '/result')
     }).then(() => {
       let promise = []
-
+      console.log(files)
       for (let i of fileName) {
         if (files[i] !== undefined) {
           data[i] = ''
