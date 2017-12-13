@@ -7,13 +7,13 @@ let config = require('../../config/config').dev.cuda
 
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
-    console.log(config)
-    child_process.spawn('sh',[config.makeFile.path + config.makeFile.target, config.makeFile.path, path], (err, stdout, stderr) => {
-      if (err) {
-        console.log(err)
-        reject(err)
-        return
-      }
+    let sh = child_process.spawn('sh',[config.makeFile.path + config.makeFile.target, config.makeFile.path, path])
+    sh.stderr.on('data', data => {
+      console.log(err)
+      reject(err)
+      return
+    })
+    sh.stdout.on('data', data => {
       console.log(stdout)
       resolve()
     })
