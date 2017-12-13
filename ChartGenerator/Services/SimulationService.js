@@ -9,12 +9,12 @@ let makeFile = function (path) {
   return new Promise((resolve, reject) => {
     let sh = child_process.spawn('sh',[config.makeFile.path + config.makeFile.target, config.makeFile.path, path])
     sh.stderr.on('data', data => {
-      console.log(data)
+      console.log(data.toString())
       reject(data)
       return
     })
     sh.stdout.on('data', data => {
-      console.log(data)
+      console.log(data.toString())
       resolve()
     })
   })
