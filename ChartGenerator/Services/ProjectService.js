@@ -10,14 +10,17 @@ let simulationService = require('./SimulationService')
 let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
-let dataSet  = ['name', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
-let fileName = ['symbol', 'stops', 'payTable', 'attr', 'pattern']
+let simulation = function (id, path, data, method) {
+  simulationService.makeFile(path).then(() => {
+    return simulationService.simulation(path, data)
+  }).then(() => {
+    handleSimulationData(id, path, method)
+  }).catch(error => {
+    console.log(error)
+  })
+}
 
-let csv    = '.csv'
-let folder = './userProject/'
-
-
-let handleSimulationData = function (path) {
+let handleSimulationData = function (id, path, method) {
   let configPath = '../.' + path + 'config'
   let config = require(configPath).config.simulationOutPutFileName
 
@@ -38,7 +41,11 @@ let handleSimulationData = function (path) {
       name: othersInfo.infoName,
       data: path + 'result/' + othersInfo.fileName
     }
-    dataRepository.insertData(id, 'others', data)
+    if (method === 'insert') {
+      dataRepository.insertData(id, 'others', data)
+    } else if (method === 'update') {
+      dataRepository.updateData(id, 'others', data)
+    }
   }
 }
 
@@ -118,6 +125,12 @@ let getProjectTypeById = function (token, id) {
     })
   })
 }
+
+let dataSet  = ['name', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
+let fileName = ['symbol', 'stops', 'payTable', 'attr', 'pattern']
+
+let csv    = '.csv'
+let folder = './userProject/'
 
 // create a new project 
 let create = function (token, body) {
@@ -208,13 +221,7 @@ let create = function (token, body) {
 
       return Promise.all(promise)
     }).then(() => {
-      simulationService.makeFile(path).then(() => {
-        return simulationService.simulation(path, data)
-      }).then(() => {
-        handleSimulationData(path)
-      }).catch(error => {
-        console.log(error)
-      })
+      simulation(id, path, data, 'insert')
       resolve()
     }).catch(error => {
       if (error === 'token expired') {
@@ -298,13 +305,7 @@ let update = function (token, id, body) {
     
       return Promise.all(promise)
     }).then(() => {
-      simulationService.makeFile(path).then(() => {
-        return simulationService.simulation(path, data)
-      }).then(() => {
-        handleSimulationData(path)
-      }).catch(error => {
-        console.log(error)
-      })
+      simulation(id, path, data, 'update')
       resolve()
     }).catch(error => {
       if (error === 'token expired') {

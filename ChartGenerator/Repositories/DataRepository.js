@@ -319,6 +319,17 @@ let insertData = function (id, table, data) {
   })
 }
 
+let updateData = function (id, table, data) {
+  return new Promise((resolve, reject) => {
+    model.knex(table + id).where('name', data.name).update({data: data}).then(() => {
+      resolve()
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
 module.exports = {
   getDistribution: getDistribution,
   getRTP:          getRTP,
@@ -326,5 +337,6 @@ module.exports = {
   getSurvivalRate: getSurvivalRate,
   getRawData:      getRawData,
   uploadData:      uploadData,
-  insertData:      insertData
+  insertData:      insertData,
+  updateData:      updateData
 }
