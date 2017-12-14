@@ -1,34 +1,68 @@
 let Promise       = require('bluebird')
-let child_process = require('child_process')
+let child_process = require('child-process-promise')
+let kue           = require('kue')
 
 let errorMsgService = require('./ErrorMsgService')
 
 let config = require('../../config/config').dev.cuda
 
+let queue = kue.createQueue()
+
+queue.watchStuckJobs(1000)
+queue.on('ready', () => {
+  console.log('ready')
+})
+queue.on('error', error => {
+  console.log(error)
+})
+
+queue.process('makeFile', (path, done) => {
+  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path).then(() => {
+    done()
+  }).catch(error => {
+    console.log(error)
+    done(new Error(error))
+  })
+})
+
+queue.process('simulation', (data, done) => {
+  child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then(() => {
+    done()
+  }).catch(error => {
+    console.log(error)
+    done(new Error(error))
+  })
+})
+
+
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
-    console.log(config)
-    child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path, (err, stdout, stderr) => {
-      if (err) {
-        console.log(err)
-        reject(err)
-        return
-      }
-      console.log(stdout)
-      resolve()
-    })
+    queue.create('makeFile', path)
+      .priority('normal')
+      .removeOnComplete(true)
+      .save(error => {
+        if (error) {
+          console.log(error)
+          reject(error)
+        } else {
+          resolve()
+        }
+      })
   })
 }
 
-let simulation = function (path, simIndex) {
+let simulation = function (path, data) {
   return new Promise((resolve, reject) => {
-    child_process.exec(path + 'Simulation ' + path + 'input.csv', (err, stdout, stderr) => {
-      if (err) {
-        console.log(err)
-        reject(err)
-        return
+    queue.create('simulation', {path: path, data: data})
+    .priority('critical')
+    .removeOnComplete(true)
+    .save(error => {
+      if (error) {
+        console.log(error)
+        reject(error)
+      } else {
+        resolve()
       }
-      resolve()
     })
   })
 }

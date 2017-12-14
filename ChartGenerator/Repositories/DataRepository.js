@@ -289,10 +289,42 @@ let parseBinary = function(rawData, format, deep, index, result) {
   })
 }
 
+let uploadData = function (id, table, path, field) {
+  return new Promise((resolve, reject) => {
+    model.knex(table + id).del().then(() => {
+      let query = 'ALTER TABLE ' + table + id + ' AUTO_INCREMENT = 1'
+      return model.knex.raw(query)
+    }).then(() => {
+      let query = 'LOAD DATA LOCAL INFILE \'' + path + '\' INTO TABLE '  + table + id +
+      ' fields terminated by \',\' enclosed by \'\"\' lines terminated by \'\\n\' IGNORE 1 LINES (' + field + ')'
+      return model.knex.raw(query)
+    }).then(() => {
+      console.log('success')
+      resolve()
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
+let insertData = function (id, table, data) {
+  return new Promise((resolve, reject) => {
+    model.knex(table + id).insert(data).then(() => {
+      resolve()
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
 module.exports = {
   getDistribution: getDistribution,
   getRTP:          getRTP,
   getTotalNetWin:  getTotalNetWin,
   getSurvivalRate: getSurvivalRate,
-  getRawData:      getRawData
+  getRawData:      getRawData,
+  uploadData:      uploadData,
+  insertData:      insertData
 }
