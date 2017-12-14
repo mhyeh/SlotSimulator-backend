@@ -11,7 +11,7 @@ let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
 let dataSet  = ['name', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
-let fileName = ['symbol', 'stops', 'payTable', 'attr', 'basePattern', 'bonusPattern']
+let fileName = ['symbol', 'stops', 'payTable', 'attr', 'pattern']
 
 let csv    = '.csv'
 let folder = './userProject/'
@@ -170,7 +170,7 @@ let create = function (token, body) {
       for (let i of fileName) {
         if (files[i] !== undefined) {
           if (!Array.isArray(files[i])) {
-            data[i] = path + i + csv
+            data[i] = (path + i + csv + ',').repeat(i === 'payTable' && Array.isArray(files['stops']) ? files['stops'].length : 1)
             promise.push(fileService.moveFile(files[i].path, data[i]))
           } else {
             data[i] = ''
@@ -179,8 +179,8 @@ let create = function (token, body) {
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
             }
-            data[i] = data[i].slice(0, -1)
           }
+          data[i] = data[i].slice(0, -1)
         }
       }
       
@@ -193,28 +193,16 @@ let create = function (token, body) {
         promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
-      let inputFile = data['symbol']
+      let inputFile = (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'
       for (let i of ['reels', 'rows', 'betCost']) {
-        inputFile += ',' + data[i]
+        inputFile += data[i] + '\n'
       }
-      inputFile += '\n'
-      for (let i of ['', '', '', 'stops', 'payTable', 'attr', 'basePattern']) {
+      for (let i of ['stops', 'payTable', 'attr', 'pattern']) {
         if (files[i] !== undefined) {
-          inputFile += i + csv + ','
-        } else {
-          inputFile += ','
+          inputFile += data[i] + '\n'
         }
-        inputFile = inputFile.slice(0, -1)
       }
-      inputFile += '\n'
-      for (let i of ['', '', '', 'stops', 'payTable', '', 'bonusPattern']) {
-        if (files[i] !== undefined) {
-          inputFile += i + csv + ','
-        } else {
-          inputFile += ','
-        }
-        inputFile = inputFile.slice(0, -1)
-      }
+
       promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
 
@@ -249,6 +237,7 @@ let update = function (token, id, body) {
   let path
   let fields
   let files
+  let oldData
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
@@ -258,7 +247,9 @@ let update = function (token, id, body) {
       data = {
         userId: userId
       }
-
+      return projectRepoisitory.getProjectById(id)
+    }).then(data => {
+      oldData = data
       return fileService.processFormData(body)
     }).then(result => {
       fields = result.fields
@@ -275,7 +266,7 @@ let update = function (token, id, body) {
       for (let i of fileName) {
         if (files[i] !== undefined) {
           if (!Array.isArray(files[i])) {
-            data[i] = path + i + csv
+            data[i] = (path + i + csv + ',').repeat(i === 'payTable' && Array.isArray(files['stops']) ? files['stops'].length : 1)
             promise.push(fileService.moveFile(files[i].path, data[i]))
           } else {
             data[i] = ''
@@ -284,8 +275,8 @@ let update = function (token, id, body) {
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
             }
-            data[i] = data[i].slice(0, -1)
           }
+          data[i] = data[i].slice(0, -1)
         }
       }
       
@@ -298,6 +289,11 @@ let update = function (token, id, body) {
         promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
+      for (let i of ['symbol', 'reels', 'rows', 'betCost', 'stops', 'payTable', 'attr', 'pattern']) {
+        inputFile += (data[i] !== undefined ? data[i] : oldData[i]) + '\n'
+      }
+
+      promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
     
       return Promise.all(promise)
