@@ -183,8 +183,7 @@ let create = function (token, body) {
       for (let i of fileName) {
         if (files[i] !== undefined) {
           if (!Array.isArray(files[i])) {
-            data[i] = path + i + csv 
-            data[i] = data[i].slice(0, -1)
+            data[i] = path + i + csv
             promise.push(fileService.moveFile(files[i].path, data[i]))
             if (i === 'payTable' && Array.isArray(files['stops'])) {
               data[i] = (data[i] + ',').repeat(files['stops'].length)
@@ -319,6 +318,7 @@ let update = function (token, id, body) {
       simulation(id, path, data, 'update')
       resolve()
     }).catch(error => {
+      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'file error') {
