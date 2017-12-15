@@ -17,7 +17,6 @@ queue.on('error', error => {
 })
 
 queue.process('makeFile', (data, done) => {
-  console.log(data.path)
   child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + data.path).then(() => {
     done()
   }).catch(error => {
@@ -37,6 +36,7 @@ queue.process('simulation', (data, done) => {
 
 
 let makeFile = function (path) {
+  console.log(path)
   return new Promise((resolve, reject) => {
     let job = queue.create('makeFile', {path: path})
       .priority('critical')
