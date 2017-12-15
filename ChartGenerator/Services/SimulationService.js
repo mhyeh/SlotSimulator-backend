@@ -16,8 +16,8 @@ queue.on('error', error => {
   console.log(error)
 })
 
-queue.process('makeFile', (path, done) => {
-  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path).then((result) => {
+queue.process('makeFile', (data, done) => {
+  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + data.path).then((result) => {
     console.log(result.stdout)
     done()
   }).catch(error => {
@@ -39,7 +39,7 @@ queue.process('simulation', (data, done) => {
 
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
-    let job = queue.create('makeFile', path)
+    let job = queue.create('makeFile', {path: path})
       .priority('critical')
       .removeOnComplete(true)
       .save()
