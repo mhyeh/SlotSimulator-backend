@@ -306,6 +306,7 @@ let update = function (token, id, body) {
         promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
+      let inputFile = ''
       for (let i of ['symbol', 'reels', 'rows', 'betCost', 'stops', 'payTable', 'attr', 'pattern']) {
         inputFile += ',' + (data[i] !== undefined ? data[i] : oldData[i]) + '\n'
       }
