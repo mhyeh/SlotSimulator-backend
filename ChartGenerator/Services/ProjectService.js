@@ -206,13 +206,13 @@ let create = function (token, body) {
         promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
-      let inputFile = (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'
+      let inputFile = ',' + (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'
       for (let i of ['reels', 'rows', 'betCost']) {
-        inputFile += data[i] + '\n'
+        inputFile += ',' + data[i] + '\n'
       }
       for (let i of ['stops', 'payTable', 'attr', 'pattern']) {
         if (files[i] !== undefined) {
-          inputFile += data[i] + '\n'
+          inputFile += ',' + data[i] + '\n'
         }
       }
 
@@ -297,7 +297,7 @@ let update = function (token, id, body) {
       }
 
       for (let i of ['symbol', 'reels', 'rows', 'betCost', 'stops', 'payTable', 'attr', 'pattern']) {
-        inputFile += (data[i] !== undefined ? data[i] : oldData[i]) + '\n'
+        inputFile += ',' + (data[i] !== undefined ? data[i] : oldData[i]) + '\n'
       }
 
       promise.push(fileService.createFile(path + 'input.csv', inputFile))
