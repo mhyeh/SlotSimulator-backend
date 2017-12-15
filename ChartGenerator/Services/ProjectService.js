@@ -224,6 +224,7 @@ let create = function (token, body) {
       simulation(id, path, data, 'insert')
       resolve()
     }).catch(error => {
+      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'Project type error') {
