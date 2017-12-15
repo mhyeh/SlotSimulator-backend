@@ -18,20 +18,20 @@ queue.on('error', error => {
 
 queue.process('makeFile', (path, done) => {
   child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path).then((result) => {
-    console.log(result.stdout)
+    //console.log(result.stdout)
     done()
   }).catch(error => {
-    console.log(error)
+    //console.log(error)
     done(new Error(error))
   })
 })
 
 queue.process('simulation', (data, done) => {
   child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then((result) => {
-    console.log(result.stdout)
+    //console.log(result.stdout)
     done()
   }).catch(error => {
-    console.log(error)
+    //console.log(error)
     done(new Error(error))
   })
 })
@@ -44,7 +44,7 @@ let makeFile = function (path) {
       .removeOnComplete(true)
       .save(error => {
         if (error) {
-          console.log(error)
+          //console.log(error)
           reject(error)
         } else {
           resolve()
@@ -60,7 +60,7 @@ let simulation = function (path, data) {
     .removeOnComplete(true)
     .save(error => {
       if (error) {
-        console.log(error)
+        //console.log(error)
         reject(error)
       } else {
         resolve()

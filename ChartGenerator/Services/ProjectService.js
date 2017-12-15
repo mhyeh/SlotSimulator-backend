@@ -17,7 +17,7 @@ let simulation = function (id, path, data, method) {
   }).then(() => {
     handleSimulationData(id, path, method)
   }).catch(error => {
-    console.log(error)
+    //console.log(error)
   })
 }
 
