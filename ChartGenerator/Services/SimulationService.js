@@ -16,8 +16,8 @@ queue.on('error', error => {
   console.log(error)
 })
 
-queue.process('makeFile', (data, done) => {
-  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + data.path).then(() => {
+queue.process('makeFile', (job, done) => {
+  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + job.data.path).then(() => {
     done()
   }).catch(error => {
     console.log(error)
@@ -25,8 +25,8 @@ queue.process('makeFile', (data, done) => {
   })
 })
 
-queue.process('simulation', (data, done) => {
-  child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then(() => {
+queue.process('simulation', (job, done) => {
+  child_process.exec(job.data.path + 'Simulation ' + job.data.path + 'input.csv ' + job.data.path + 'result/ ' + job.data.data.runTime + ' ' + job.data.data.block + ' ' + job.data.data.thread).then(() => {
     done()
   }).catch(error => {
     console.log(error)
@@ -36,7 +36,6 @@ queue.process('simulation', (data, done) => {
 
 
 let makeFile = function (path) {
-  console.log(path)
   return new Promise((resolve, reject) => {
     let job = queue.create('makeFile', {path: path})
       .priority('critical')
