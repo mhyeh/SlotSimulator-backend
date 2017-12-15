@@ -18,20 +18,20 @@ queue.on('error', error => {
 
 queue.process('makeFile', (path, done) => {
   child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + path).then((result) => {
-    //console.log(result.stdout)
+    console.log(result.stdout)
     done()
   }).catch(error => {
-    //console.log(error)
+    console.log(error)
     done(new Error(error))
   })
 })
 
 queue.process('simulation', (data, done) => {
   child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then((result) => {
-    //console.log(result.stdout)
+    console.log(result.stdout)
     done()
   }).catch(error => {
-    //console.log(error)
+    console.log(error)
     done(new Error(error))
   })
 })
@@ -39,32 +39,30 @@ queue.process('simulation', (data, done) => {
 
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
-    queue.create('makeFile', path)
+    let job = queue.create('makeFile', path)
       .priority('critical')
       .removeOnComplete(true)
-      .save(error => {
-        if (error) {
-          //console.log(error)
-          reject(error)
-        } else {
-          resolve()
-        }
-      })
+      .save()
+    
+    job.on('complete', () => {
+      resolve()
+    }).on('failed', () => {
+      reject()
+    })
   })
 }
 
 let simulation = function (path, data) {
   return new Promise((resolve, reject) => {
-    queue.create('simulation', {path: path, data: data})
+    let job = queue.create('simulation', {path: path, data: data})
     .priority('critical')
     .removeOnComplete(true)
-    .save(error => {
-      if (error) {
-        //console.log(error)
-        reject(error)
-      } else {
-        resolve()
-      }
+    .save()
+
+    job.on('complete', () => {
+      resolve()
+    }).on('failed', () => {
+      reject()
     })
   })
 }

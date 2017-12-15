@@ -11,7 +11,6 @@ let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
 let simulation = function (id, path, data, method) {
-  console.log(path)
   simulationService.makeFile(path).then(() => {
     return simulationService.simulation(path, data)
   }).then(() => {
