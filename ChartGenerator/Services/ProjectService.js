@@ -184,6 +184,7 @@ let create = function (token, body) {
         if (files[i] !== undefined) {
           if (!Array.isArray(files[i])) {
             data[i] = (path + i + csv + ',').repeat(i === 'payTable' && Array.isArray(files['stops']) ? files['stops'].length : 1)
+            data[i] = data[i].slice(0, -1)
             promise.push(fileService.moveFile(files[i].path, data[i]))
           } else {
             data[i] = ''
@@ -192,8 +193,8 @@ let create = function (token, body) {
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
             }
+            data[i] = data[i].slice(0, -1)
           }
-          data[i] = data[i].slice(0, -1)
         }
       }
       
