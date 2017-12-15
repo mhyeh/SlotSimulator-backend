@@ -40,7 +40,7 @@ queue.process('simulation', (data, done) => {
 let makeFile = function (path) {
   return new Promise((resolve, reject) => {
     queue.create('makeFile', path)
-      .priority('normal')
+      .priority('critical')
       .removeOnComplete(true)
       .save(error => {
         if (error) {
