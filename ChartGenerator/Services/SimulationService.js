@@ -17,8 +17,8 @@ queue.on('error', error => {
 })
 
 queue.process('makeFile', (data, done) => {
-  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + data.path).then((result) => {
-    console.log(result.stdout)
+  console.log(data.path)
+  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + data.path).then(() => {
     done()
   }).catch(error => {
     console.log(error)
@@ -27,8 +27,7 @@ queue.process('makeFile', (data, done) => {
 })
 
 queue.process('simulation', (data, done) => {
-  child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then((result) => {
-    console.log(result.stdout)
+  child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then(() => {
     done()
   }).catch(error => {
     console.log(error)
