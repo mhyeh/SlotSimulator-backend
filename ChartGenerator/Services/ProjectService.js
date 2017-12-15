@@ -279,8 +279,12 @@ let update = function (token, id, body) {
       for (let i of fileName) {
         if (files[i] !== undefined) {
           if (!Array.isArray(files[i])) {
-            data[i] = (path + i + csv + ',').repeat(i === 'payTable' && Array.isArray(files['stops']) ? files['stops'].length : 1)
+            data[i] = path + i + csv
             promise.push(fileService.moveFile(files[i].path, data[i]))
+            if (i === 'payTable' && Array.isArray(files['stops'])) {
+              data[i] = (data[i] + ',').repeat(files['stops'].length)
+              data[i] = data[i].slice(0, -1)
+            }
           } else {
             data[i] = ''
             for (let j in files[i]) {
@@ -288,8 +292,9 @@ let update = function (token, id, body) {
               data[i] += filePath + ','
               promise.push(fileService.moveFile(files[i][j].path, filePath))
             }
+            data[i] = data[i].slice(0, -1)
           }
-          data[i] = data[i].slice(0, -1)
+          
         }
       }
       
