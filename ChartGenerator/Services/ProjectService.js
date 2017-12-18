@@ -11,7 +11,7 @@ let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
 let compare = function (a, b) {
-  return a.localeCompare(b)
+  return a.name.localeCompare(b.name)
 }
 
 let simulation = function (id, path, data, method) {
