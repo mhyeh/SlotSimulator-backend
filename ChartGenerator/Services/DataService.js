@@ -81,7 +81,7 @@ let getTable = function (token, id, type) {
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
-      let path = folder + accountId + '/' + id  + '/'
+      let path = '../../userProject/' + accountId + '/' + id  + '/'
       let configPath = path + 'config'
       let dataPath = path + 'result/'
 
