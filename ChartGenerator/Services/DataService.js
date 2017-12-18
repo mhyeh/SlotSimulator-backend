@@ -86,10 +86,12 @@ let getTable = function (token, id, type) {
       let dataPath = path + 'result/'
 
       let config = require(configPath).config.simulationOutPutFileName
+      console.log(type)
       return fileService.readFile(dataPath + config[type + 'ParSheet'] + extension, 'utf8')
     }).then(result => {
       resolve(result)
     }).catch(error => {
+      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'file error') {
