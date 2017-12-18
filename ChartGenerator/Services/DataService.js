@@ -81,12 +81,11 @@ let getTable = function (token, id, type) {
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
-      let path = '../../userProject/' + accountId + '/' + id  + '/'
-      let configPath = path + 'config'
+      let path = folder + accountId + '/' + id  + '/'
+      let configPath = '../.' + path + 'config'
       let dataPath = path + 'result/'
 
       let config = require(configPath).config.simulationOutPutFileName
-      console.log(type)
       return fileService.readFile(dataPath + config[type + 'ParSheet'] + extension, 'utf8')
     }).then(result => {
       resolve(result)
