@@ -29,7 +29,7 @@ queue.process('makeFile', (job, done) => {
 
 queue.process('simulation', (job, done) => {
   let data = job.data
-  let cmd = data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread
+  let cmd = data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + 100000 + data.data.block + ' ' + data.data.thread
   console.log(cmd)
   child_process.exec(cmd).then((result) => {
     console.log(result.stdout)
