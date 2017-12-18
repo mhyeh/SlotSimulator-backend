@@ -32,7 +32,7 @@ let handleSimulationData = function (id, path, method) {
   let tablesName = ['basegame', 'freegame', 'overall', 'survivalrate']
 
   for (let index in filesName) {
-    if (config[filesName[index]]) {
+    if (config[filesName[index]] !== undefined && config[filesName[index]] !== null) {
       if (filesName[index] !== 'survivalRate') {
         dataRepository.uploadData(id, tablesName[index], path + 'result/' + config[filesName[index]] + csv, 'netWin' + ((filesName[index] === 'overallSpin') ? ',triger' : ''))
       } else {
