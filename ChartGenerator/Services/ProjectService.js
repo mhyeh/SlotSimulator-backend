@@ -191,7 +191,9 @@ let create = function (token, body) {
             }
           } else {
             data[i] = ''
+            console.log(files[i])
             files[i].reverse()
+            console.log(files[i])
             for (let j in files[i]) {
               let filePath = path + i + j + csv
               data[i] += filePath + ','
