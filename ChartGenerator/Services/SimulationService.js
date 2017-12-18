@@ -29,7 +29,9 @@ queue.process('makeFile', (job, done) => {
 
 queue.process('simulation', (job, done) => {
   let data = job.data
-  child_process.exec(data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread).then((result) => {
+  let cmd = data.path + 'Simulation ' + data.path + 'input.csv ' + data.path + 'result/ ' + data.data.runTime + ' ' + data.data.block + ' ' + data.data.thread
+  console.log(cmd)
+  child_process.exec(cmd).then((result) => {
     console.log(result.stdout)
     done()
   }).catch(error => {
