@@ -10,6 +10,10 @@ let simulationService = require('./SimulationService')
 let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
+let compare = function (a, b) {
+  return a.localeCompare(b)
+}
+
 let simulation = function (id, path, data, method) {
   simulationService.makeFile(path).then(() => {
     return simulationService.simulation(path, data)
@@ -191,9 +195,7 @@ let create = function (token, body) {
             }
           } else {
             data[i] = ''
-            console.log(files[i])
-            files[i].reverse()
-            console.log(files[i])
+            files[i].sort(compare)
             for (let j in files[i]) {
               let filePath = path + i + j + csv
               data[i] += filePath + ','
@@ -289,7 +291,7 @@ let update = function (token, id, body) {
             }
           } else {
             data[i] = ''
-            files[i].reverse()
+            files[i].sort(compare)
             for (let j in files[i]) {
               let filePath = path + i + j + csv
               data[i] += filePath + ','
