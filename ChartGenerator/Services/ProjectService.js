@@ -191,6 +191,7 @@ let create = function (token, body) {
             }
           } else {
             data[i] = ''
+            files.reverse()
             for (let j in files[i]) {
               let filePath = path + i + j + csv
               data[i] += filePath + ','
@@ -286,6 +287,7 @@ let update = function (token, id, body) {
             }
           } else {
             data[i] = ''
+            files.reverse()
             for (let j in files[i]) {
               let filePath = path + i + j + csv
               data[i] += filePath + ','
