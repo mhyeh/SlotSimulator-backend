@@ -214,8 +214,7 @@ let create = function (token, body) {
       }
       if (files.gameLogic !== undefined) {
         data.gameLogic = path + 'gameLogic.cu'
-        promise.push(fileService.copyFile(files.gameLogic.path, data.gameLogic))
-        promise.push(fileService.copyFile(files.gameLogic.path, config.path + 'SlotFunctions.cu'))
+        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
       let inputFile = ',' + (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'
@@ -312,8 +311,7 @@ let update = function (token, id, body) {
       }
       if (files.gameLogic !== undefined) {
         data.gameLogic = path + 'gameLogic.cu'
-        promise.push(fileService.copyFile(files.gameLogic.path, data.gameLogic))
-        promise.push(fileService.copyFile(files.gameLogic.path, config.path + 'SlotFunctions.cu'))
+        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
       }
 
       let inputFile = ''

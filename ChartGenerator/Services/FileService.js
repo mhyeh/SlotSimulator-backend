@@ -106,7 +106,7 @@ let moveFile = function (from, to) {
 
 let copyFile = function (from, to) {
   return new Promise((resovle, reject) => {
-    fs.copyFile(from, path.join(appRoot, to), err => {
+    fs.copyFile(from, to, err => {
       if (err) {
         reject('file error')
         return

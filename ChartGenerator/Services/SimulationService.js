@@ -3,6 +3,7 @@ let child_process = require('child-process-promise')
 let kue           = require('kue')
 
 let errorMsgService = require('./ErrorMsgService')
+let fileService     = require('./FileService')
 
 let config = require('../../config/config').dev.cuda
 
@@ -18,12 +19,22 @@ queue.on('error', error => {
 
 queue.process('makeFile', (job, done) => {
   let data = job.data
-  child_process.exec('sh ' + config.path + config.target + ' ' + config.path + ' ' + data.path).then((result) => {
-    console.log(result.stdout)
-    done()
-  }).catch(error => {
-    console.log(error)
-    done(new Error(error))
+  fileService.copyFile(data.path + 'gameLogic.cu', config.path + 'SlotFunctions.cu').then(() => {
+    child_process.exec('sh ' + config.path + config.target + ' ' + config.path + ' ' + data.path).then((result) => {
+      console.log(result.stdout)
+      done()
+    }).catch(error => {
+      console.log(error)
+      done(new Error(error))
+    })
+  }).catch(() => {
+    child_process.exec('sh ' + config.path + config.target + ' ' + config.path + ' ' + data.path).then((result) => {
+      console.log(result.stdout)
+      done()
+    }).catch(error => {
+      console.log(error)
+      done(new Error(error))
+    })
   })
 })
 
