@@ -20,8 +20,8 @@ queue.on('error', error => {
 queue.process('makeFile', (job, done) => {
   let data = job.data
   let promise = []
-  promise.push(fileService.copyFile(data.path + 'SlotFunctions.cu', config.path))
-  promise.push(fileService.copyFile(data.path + 'Header.h', config.path))
+  promise.push(fileService.copyFile(data.path + 'SlotFunctions.cu', config.path + 'SlotFunctions.cu'))
+  promise.push(fileService.copyFile(data.path + 'Header.h', config.path + 'Header.h'))
   Promise.all(promise).then(() => {
     child_process.exec('sh ' + config.path + config.target + ' ' + config.path + ' ' + data.path).then((result) => {
       console.log(result.stdout)
