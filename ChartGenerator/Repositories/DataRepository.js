@@ -1,6 +1,7 @@
 let Promise   = require('bluebird')
 let mapify    = require('es6-mapify')
 let bigNumber = require('bignumber.js')
+let Int64     = require('int64-buffer')
 
 let projectRepository = require('./ProjectRepository')
 
@@ -242,6 +243,20 @@ let parseBinary = function(rawData, format, deep, index, result) {
     if (format[deep].type === 'int') {
       result[format[deep].name] = rawData.readInt32LE(index)
       resolve(parseBinary(rawData, format, deep + 1, index + 4, result))
+    } else if (format[deep].type === 'lli') {
+      let buffer = Buffer.allocUnsafe(8)
+      for (let i = 0; i < 8; i++) {
+        buffer[i] = rawData[index + i]
+      }
+      result[format[deep].name] = Int64.Int64LE(buffer)
+      resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
+    } else if (format[deep].type === 'ull') {
+      let buffer = Buffer.allocUnsafe(8)
+      for (let i = 0; i < 8; i++) {
+        buffer[i] = rawData[index + i]
+      }
+      result[format[deep].name] = Int64.Uint64LE(buffer)
+      resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'double') {
       result[format[deep].name] = rawData.readDoubleLE(index)
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
