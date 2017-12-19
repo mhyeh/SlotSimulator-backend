@@ -248,14 +248,14 @@ let parseBinary = function(rawData, format, deep, index, result) {
       for (let i = 0; i < 8; i++) {
         buffer[i] = rawData[index + i]
       }
-      result[format[deep].name] = Int64.Int64LE(buffer)
+      result[format[deep].name] = Int64.Int64LE(buffer).toString()
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'ull') {
       let buffer = Buffer.allocUnsafe(8)
       for (let i = 0; i < 8; i++) {
         buffer[i] = rawData[index + i]
       }
-      result[format[deep].name] = Int64.Uint64LE(buffer)
+      result[format[deep].name] = Int64.Uint64LE(buffer).toString()
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'double') {
       result[format[deep].name] = rawData.readDoubleLE(index)
