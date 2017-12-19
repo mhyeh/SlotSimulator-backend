@@ -10,6 +10,8 @@ let simulationService = require('./SimulationService')
 let fileService       = require('./FileService')
 let errorMsgService   = require('./ErrorMsgService')
 
+let config = require('../../config/config').dev.cuda
+
 let compare = function (a, b) {
   return a.name.localeCompare(b.name)
 }
@@ -212,7 +214,8 @@ let create = function (token, body) {
       }
       if (files.gameLogic !== undefined) {
         data.gameLogic = path + 'gameLogic.cu'
-        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
+        promise.push(fileService.copyFile(files.gameLogic.path, data.gameLogic))
+        promise.push(fileService.copyFile(files.gameLogic.path, config.path + 'gameLogic.cu'))
       }
 
       let inputFile = ',' + (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'

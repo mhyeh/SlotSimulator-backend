@@ -18,7 +18,7 @@ queue.on('error', error => {
 
 queue.process('makeFile', (job, done) => {
   let data = job.data
-  child_process.exec('sh ' + config.makeFile.path + config.makeFile.target + ' ' + config.makeFile.path + ' ' + data.path).then((result) => {
+  child_process.exec('sh ' + config.path + config.target + ' ' + config.path + ' ' + data.path).then((result) => {
     console.log(result.stdout)
     done()
   }).catch(error => {
