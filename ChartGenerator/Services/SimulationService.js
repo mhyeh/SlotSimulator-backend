@@ -19,7 +19,10 @@ queue.on('error', error => {
 
 queue.process('makeFile', (job, done) => {
   let data = job.data
-  fileService.copyFile(data.path + 'gameLogic.cu', config.path + 'SlotFunctions.cu').then(() => {
+  let promise = []
+  promise.push(fileService.copyFile(data.path + 'SlotFunctions.cu', config.path))
+  promise.push(fileService.copyFile(data.path + 'Header.h', config.path))
+  Promise.all(promise).then(() => {
     child_process.exec('sh ' + config.path + config.target + ' ' + config.path + ' ' + data.path).then((result) => {
       console.log(result.stdout)
       done()

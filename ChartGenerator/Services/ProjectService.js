@@ -212,9 +212,11 @@ let create = function (token, body) {
         data.config = path + 'config.js'
         promise.push(fileService.moveFile(files.config.path, data.config))
       }
-      if (files.gameLogic !== undefined) {
-        data.gameLogic = path + 'gameLogic.cu'
-        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
+      if (files.gameLogic !== undefined && files.gameLogic.length === 2) {
+        files.gameLogic.sort(compare)
+        data.gameLogic = path + 'SlotFunctions.cu,header.h'
+        promise.push(fileService.moveFile(files.gameLogic[0].path, path + 'Header.h'))
+        promise.push(fileService.moveFile(files.gameLogic[1].path, path + 'SlotFunctions.cu'))
       }
 
       let inputFile = ',' + (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'
@@ -309,9 +311,11 @@ let update = function (token, id, body) {
         data.config = path + 'config.js'
         promise.push(fileService.moveFile(files.config.path, data.config))
       }
-      if (files.gameLogic !== undefined) {
-        data.gameLogic = path + 'gameLogic.cu'
-        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
+      if (files.gameLogic !== undefined && files.gameLogic.length === 2) {
+        files.gameLogic.sort(compare)
+        data.gameLogic = path + 'SlotFunctions.cu,header.h'
+        promise.push(fileService.moveFile(files.gameLogic[0].path, path + 'Header.h'))
+        promise.push(fileService.moveFile(files.gameLogic[1].path, path + 'SlotFunctions.cu'))
       }
 
       let inputFile = ''
