@@ -114,7 +114,9 @@ let getOthers = function (token, id, info) {
       }
       return Promise.props(promise)
     }).then(data => {
-      return configs.getData(data, info.setting)
+      console.log(data)
+      let setting = (info.setting !== undefined ? info.setting : '')
+      return configs.getData(data, setting)
     }).then(data => {
       return configs.process(data, configs.renderData)
     }).then(result => {
