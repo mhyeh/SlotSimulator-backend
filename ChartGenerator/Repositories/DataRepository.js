@@ -240,10 +240,18 @@ let parseBinary = function(rawData, format, deep, index, result) {
       return
     }
 
+    let length = rawData.length
+
     if (format[deep].type === 'int') {
+      if (index > length - 4) {
+        reject()
+      }
       result[format[deep].name] = rawData.readInt32LE(index)
       resolve(parseBinary(rawData, format, deep + 1, index + 4, result))
     } else if (format[deep].type === 'lli') {
+      if (index > length - 8) {
+        reject()
+      }
       let buffer = Buffer.allocUnsafe(8)
       for (let i = 0; i < 8; i++) {
         buffer[i] = rawData[index + i]
@@ -251,6 +259,9 @@ let parseBinary = function(rawData, format, deep, index, result) {
       result[format[deep].name] = Int64.Int64LE(buffer).toNumber()
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'ull') {
+      if (index > length - 8) {
+        reject()
+      }
       let buffer = Buffer.allocUnsafe(8)
       for (let i = 0; i < 8; i++) {
         buffer[i] = rawData[index + i]
@@ -258,9 +269,15 @@ let parseBinary = function(rawData, format, deep, index, result) {
       result[format[deep].name] = Int64.Uint64LE(buffer).toNumber()
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'double') {
+      if (index > length - 8) {
+        reject()
+      }
       result[format[deep].name] = rawData.readDoubleLE(index)
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'string') {
+      if (index > length - format[deep].length) {
+        reject()
+      }
       result[format[deep].name] = rawData.toString('ascii', index, index + format[deep].length)
       resolve(parseBinary(rawData, format, deep + 1, index + format[deep].length, result))
     } else if (format[deep].type === 'object') {
