@@ -88,27 +88,28 @@ let processFormData = function (data) {
         reject('file error')
         return
       }
+      resolve({fields: fields, files: files})
 
-      let promise = []
-      for (let i in files) {
-        if (Array.isArray(files[i])) {
-          for (let j in files[i]) {
-            let cmd = "tr -d '\\r' < " + files[i][j].path + ' > ' + files[i][j].path
-            console.log(cmd)
-            promise.push(child_process.exec(cmd))
-          }
-        } else {
-          let cmd = "tr -d '\\r' < " + files[i].path + ' > ' + files[i].path
-          console.log(cmd)
-          promise.push(child_process.exec(cmd))
-        }
-      }
-      Promise.all(promise).then(() => {
-        resolve({fields: fields, files: files})
-      }).catch(error => {
-        console.log(error)
-        reject()
-      })
+      // let promise = []
+      // for (let i in files) {
+      //   if (Array.isArray(files[i])) {
+      //     for (let j in files[i]) {
+      //       let cmd = "tr -d '\\r' < " + files[i][j].path + ' > ' + files[i][j].path
+      //       console.log(cmd)
+      //       promise.push(child_process.exec(cmd))
+      //     }
+      //   } else {
+      //     let cmd = "tr -d '\\r' < " + files[i].path + ' > ' + files[i].path
+      //     console.log(cmd)
+      //     promise.push(child_process.exec(cmd))
+      //   }
+      // }
+      // Promise.all(promise).then(() => {
+      //   resolve({fields: fields, files: files})
+      // }).catch(error => {
+      //   console.log(error)
+      //   reject()
+      // })
     })
   })
 }
