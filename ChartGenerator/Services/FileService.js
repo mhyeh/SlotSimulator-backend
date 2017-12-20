@@ -93,12 +93,12 @@ let processFormData = function (data) {
       for (let i in files) {
         if (Array.isArray(files[i])) {
           for (let j in files[i]) {
-            let cmd = "tr -d '\r' < " + files[i][j].path + ' > ' + files[i][j].path
+            let cmd = "tr -d '\\r' < " + files[i][j].path + ' > ' + files[i][j].path
             console.log(cmd)
             promise.push(child_process.exec(cmd))
           }
         } else {
-          let cmd = "tr -d '\r' < " + files[i].path + ' > ' + files[i].path
+          let cmd = "tr -d '\\r' < " + files[i].path + ' > ' + files[i].path
           console.log(cmd)
           promise.push(child_process.exec(cmd))
         }
