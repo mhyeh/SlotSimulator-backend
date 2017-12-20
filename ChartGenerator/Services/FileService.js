@@ -91,7 +91,7 @@ let processFormData = function (data) {
 
       let promise = []
       for (let i in files) {
-        if (Array.isArray(fils[i])) {
+        if (Array.isArray(files[i])) {
           for (let j in files[i]) {
             promise.push(child_process.exec('tr -d \\r < ' + files[i][j].path + ' > ' + files[i][j].path))
           }
