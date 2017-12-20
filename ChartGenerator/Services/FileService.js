@@ -88,17 +88,18 @@ let processFormData = function (data) {
         reject('file error')
         return
       }
-
-      let promise = []
-      for (let file of files) {
-        promise.push(child_process.exec('tr -d \\r < ' + file.path + ' > ' + file.path))
-      }
-      Promise.all(promise).then(() => {
-        resolve({fields: fields, files: files})
-      }).catch(error => {
-        console.log(error)
-        reject()
-      })
+      console.log(files)
+      // let promise = []
+      // for (let file of files) {
+      //   promise.push(child_process.exec('tr -d \\r < ' + file.path + ' > ' + file.path))
+      // }
+      // Promise.all(promise).then(() => {
+      //   resolve({fields: fields, files: files})
+      // }).catch(error => {
+      //   console.log(error)
+      //   reject()
+      // })
+      resolve({fields: fields, files: files})
     })
   })
 }
