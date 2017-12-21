@@ -234,24 +234,24 @@ let create = function (token, body) {
 
       return Promise.all(promise)
     }).then(() => {
-      let promise = []
-      for (let i of fileName) {
-        if (Array.isArray(files[i])) {
-          for (let j in files[i]) {
-            let filePath = path + i + j + csv
-            let cmd = "perl -pi -e 's/\\r\\n/\\n/g' " + filePath
-            console.log(cmd)
-            promise.push(child_process.exec(cmd))
-          }
-        } else {
-          let filePath = path + i + csv
-          let cmd = "perl -pi -e 's/\\r\\n/\\n/g' " + filePath
-          console.log(cmd)
-          promise.push(child_process.exec(cmd))
-        }
-      }
-      return Promise.all(promise)
-    }).then(() => {
+    //   let promise = []
+    //   for (let i of fileName) {
+    //     if (Array.isArray(files[i])) {
+    //       for (let j in files[i]) {
+    //         let filePath = path + i + j + csv
+    //         let cmd = "perl -pi -e 's/\\r\\n/\\n/g' " + filePath
+    //         console.log(cmd)
+    //         promise.push(child_process.exec(cmd))
+    //       }
+    //     } else {
+    //       let filePath = path + i + csv
+    //       let cmd = "perl -pi -e 's/\\r\\n/\\n/g' " + filePath
+    //       console.log(cmd)
+    //       promise.push(child_process.exec(cmd))
+    //     }
+    //   }
+    //   return Promise.all(promise)
+    // }).then(() => {
       simulation(id, path, data, 'insert')
       resolve()
     }).catch(error => {
