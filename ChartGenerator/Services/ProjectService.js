@@ -234,8 +234,6 @@ let create = function (token, body) {
 
       return Promise.all(promise)
     }).then(() => {
-      return child_process.exec('chmod -R 777 ' + path)
-    }).then(() => {
       let promise = []
       for (let i of fileName) {
         if (Array.isArray(files[i])) {
