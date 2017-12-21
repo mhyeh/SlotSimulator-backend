@@ -234,6 +234,22 @@ let create = function (token, body) {
 
       return Promise.all(promise)
     }).then(() => {
+      let promise = []
+      for (let i of fileName) {
+        if (Array.isArray(files[i])) {
+          for (let j in files[i]) {
+            let filePath = path + i + j + csv
+            let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+            promise.push(child_process.exec(cmd))
+          }
+        } else {
+          let filePath = path + i + csv
+          let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+          promise.push(child_process.exec(cmd))
+        }
+      }
+      return Promise.all(promise)
+    }).then(() => {
       simulation(id, path, data, 'insert')
       resolve()
     }).catch(error => {
@@ -326,6 +342,22 @@ let update = function (token, id, body) {
       promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
     
+      return Promise.all(promise)
+    }).then(() => {
+      let promise = []
+      for (let i of fileName) {
+        if (Array.isArray(files[i])) {
+          for (let j in files[i]) {
+            let filePath = path + i + j + csv
+            let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+            promise.push(child_process.exec(cmd))
+          }
+        } else {
+          let filePath = path + i + csv
+          let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+          promise.push(child_process.exec(cmd))
+        }
+      }
       return Promise.all(promise)
     }).then(() => {
       simulation(id, path, data, 'update')

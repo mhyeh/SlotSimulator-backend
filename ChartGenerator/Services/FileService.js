@@ -1,10 +1,9 @@
-let Promise       = require('bluebird')
-let path          = require('path')
-let fs            = Promise.promisifyAll(require('fs'))
-let mkdirp        = Promise.promisifyAll(require('mkdirp'))
-let rimraf        = Promise.promisify(require('rimraf'))
-let formidable    = require('formidable')
-let child_process = require('child-process-promise')
+let Promise    = require('bluebird')
+let path       = require('path')
+let fs         = Promise.promisifyAll(require('fs'))
+let mkdirp     = Promise.promisifyAll(require('mkdirp'))
+let rimraf     = Promise.promisify(require('rimraf'))
+let formidable = require('formidable')
 
 let appRoot = path.join(path.dirname(require.main.filename), '../')
 
@@ -89,27 +88,6 @@ let processFormData = function (data) {
         return
       }
       resolve({fields: fields, files: files})
-
-      // let promise = []
-      // for (let i in files) {
-      //   if (Array.isArray(files[i])) {
-      //     for (let j in files[i]) {
-      //       let cmd = "tr -d '\\r' < " + files[i][j].path + ' > ' + files[i][j].path
-      //       console.log(cmd)
-      //       promise.push(child_process.exec(cmd))
-      //     }
-      //   } else {
-      //     let cmd = "tr -d '\\r' < " + files[i].path + ' > ' + files[i].path
-      //     console.log(cmd)
-      //     promise.push(child_process.exec(cmd))
-      //   }
-      // }
-      // Promise.all(promise).then(() => {
-      //   resolve({fields: fields, files: files})
-      // }).catch(error => {
-      //   console.log(error)
-      //   reject()
-      // })
     })
   })
 }
