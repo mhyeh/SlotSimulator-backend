@@ -354,11 +354,13 @@ let update = function (token, id, body) {
           for (let j in files[i]) {
             let filePath = path + i + j + csv
             let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+            console.log(cmd)
             promise.push(child_process.exec(cmd))
           }
         } else {
           let filePath = path + i + csv
           let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+          console.log(cmd)
           promise.push(child_process.exec(cmd))
         }
       }
