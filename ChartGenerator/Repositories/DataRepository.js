@@ -1,6 +1,7 @@
 let Promise   = require('bluebird')
 let mapify    = require('es6-mapify')
 let bigNumber = require('bignumber.js')
+let Int64     = require('int64-buffer')
 
 let projectRepository = require('./ProjectRepository')
 
@@ -239,13 +240,44 @@ let parseBinary = function(rawData, format, deep, index, result) {
       return
     }
 
+    let length = rawData.length
+
     if (format[deep].type === 'int') {
+      if (index > length - 4) {
+        reject()
+      }
       result[format[deep].name] = rawData.readInt32LE(index)
       resolve(parseBinary(rawData, format, deep + 1, index + 4, result))
+    } else if (format[deep].type === 'lli') {
+      if (index > length - 8) {
+        reject()
+      }
+      let buffer = Buffer.allocUnsafe(8)
+      for (let i = 0; i < 8; i++) {
+        buffer[i] = rawData[index + i]
+      }
+      result[format[deep].name] = Int64.Int64LE(buffer).toNumber()
+      resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
+    } else if (format[deep].type === 'ull') {
+      if (index > length - 8) {
+        reject()
+      }
+      let buffer = Buffer.allocUnsafe(8)
+      for (let i = 0; i < 8; i++) {
+        buffer[i] = rawData[index + i]
+      }
+      result[format[deep].name] = Int64.Uint64LE(buffer).toNumber()
+      resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'double') {
+      if (index > length - 8) {
+        reject()
+      }
       result[format[deep].name] = rawData.readDoubleLE(index)
       resolve(parseBinary(rawData, format, deep + 1, index + 8, result))
     } else if (format[deep].type === 'string') {
+      if (index > length - format[deep].length) {
+        reject()
+      }
       result[format[deep].name] = rawData.toString('ascii', index, index + format[deep].length)
       resolve(parseBinary(rawData, format, deep + 1, index + format[deep].length, result))
     } else if (format[deep].type === 'object') {
@@ -289,10 +321,54 @@ let parseBinary = function(rawData, format, deep, index, result) {
   })
 }
 
+let uploadData = function (id, table, path, field) {
+  return new Promise((resolve, reject) => {
+    model.knex(table + id).del().then(() => {
+      let query = 'ALTER TABLE ' + table + id + ' AUTO_INCREMENT = 1'
+      return model.knex.raw(query)
+    }).then(() => {
+      let query = 'LOAD DATA LOCAL INFILE \'' + path + '\' INTO TABLE '  + table + id +
+      ' fields terminated by \',\' enclosed by \'\"\' lines terminated by \'\\n\' IGNORE 1 LINES (' + field + ')'
+      return model.knex.raw(query)
+    }).then(() => {
+      console.log('success')
+      resolve()
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
+let insertData = function (id, table, data) {
+  return new Promise((resolve, reject) => {
+    model.knex(table + id).insert(data).then(() => {
+      resolve()
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
+let updateData = function (id, table, data) {
+  return new Promise((resolve, reject) => {
+    model.knex(table + id).where('name', data.name).update({data: data}).then(() => {
+      resolve()
+    }).catch(error => {
+      console.log(error)
+      reject()
+    })
+  })
+}
+
 module.exports = {
   getDistribution: getDistribution,
   getRTP:          getRTP,
   getTotalNetWin:  getTotalNetWin,
   getSurvivalRate: getSurvivalRate,
-  getRawData:      getRawData
+  getRawData:      getRawData,
+  uploadData:      uploadData,
+  insertData:      insertData,
+  updateData:      updateData
 }

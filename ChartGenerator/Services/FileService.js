@@ -1,9 +1,10 @@
-let Promise    = require('bluebird')
-let path       = require('path')
-let fs         = Promise.promisifyAll(require('fs'))
-let mkdirp     = Promise.promisifyAll(require('mkdirp'))
-let rimraf     = Promise.promisify(require('rimraf'))
-let formidable = require('formidable')
+let Promise       = require('bluebird')
+let path          = require('path')
+let fs            = Promise.promisifyAll(require('fs'))
+let mkdirp        = Promise.promisifyAll(require('mkdirp'))
+let rimraf        = Promise.promisify(require('rimraf'))
+let formidable    = require('formidable')
+let child_process = require('child-process-promise')
 
 let appRoot = path.join(path.dirname(require.main.filename), '../')
 
@@ -79,7 +80,7 @@ let processFormData = function (data) {
     let form = new formidable.IncomingForm()
     form.encoding       = 'utf-8'
     form.keepExtensions = true
-    form.multiples      = false
+    form.multiples      = true
 
     form.parse(data, (err, fields, files) => {
       if (err) {
@@ -87,19 +88,49 @@ let processFormData = function (data) {
         reject('file error')
         return
       }
-      resolve({fields: fields, files: files})
+
+      let promise = []
+      for (let i in files) {
+        if (Array.isArray(files[i])) {
+          for (let j in files[i]) {
+            let cmd = "perl -pi -e 's/\\r\\n/\\n/g' " + files[i][j].path
+            promise.push(child_process.exec(cmd))
+          }
+        } else {
+          let cmd = "perl -pi -e 's/\\r\\n/\\n/g' " + files[i].path
+          promise.push(child_process.exec(cmd))
+        }
+      }
+      Promise.all(promise).then(() => {
+        resolve({fields: fields, files: files})
+      }).catch(error => {
+        console.log(error)
+        reject()
+      })
     })
   })
 }
 
 let moveFile = function (from, to) {
   return new Promise((resolve, reject) => {
-    fs.rename(from, path.join(appRoot, to), (err) => {
+    fs.rename(from, path.join(appRoot, to), err => {
       if (err) {
         reject('file error')
         return
       }
       resolve()
+    })
+  })
+}
+
+let copyFile = function (from, to) {
+  return new Promise((resovle, reject) => {
+    fs.copyFile(from, to, err => {
+      if (err) {
+        reject('file error')
+        return
+      }
+      resovle()
     })
   })
 }
@@ -111,6 +142,7 @@ module.exports = {
   createFolder:    createFolder,
   deleteFolder:    deleteFolder,
   processFormData: processFormData,
-  moveFile:        moveFile
+  moveFile:        moveFile,
+  copyFile:        copyFile
 }
 

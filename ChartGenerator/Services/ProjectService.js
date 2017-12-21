@@ -1,17 +1,58 @@
-let Promise = require('bluebird')
+let Promise       = require('bluebird')
 
 let redisRepository       = require('../Repositories/RedisRepository')
 let projectRepoisitory    = require('../Repositories/ProjectRepository')
 let projectTypeRepository = require('../Repositories/ProjectTypeRepository')
+let dataRepository        = require('../Repositories/DataRepository')
 
-let fileService     = require('./FileService')
-let errorMsgService = require('./ErrorMsgService')
+let simulationService = require('./SimulationService')
+let fileService       = require('./FileService')
+let errorMsgService   = require('./ErrorMsgService')
 
-let dataSet  = ['name', 'typeId', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
-let fileName = ['symbol', 'baseStops', 'bonusStops', 'basePayTable', 'bonusPayTable', 'attr', 'basePattern', 'bonusPattern']
+let config = require('../../config/config').dev.cuda
 
-let csv    = '.csv'
-let folder = './userProject/'
+let compare = function (a, b) {
+  return a.name.localeCompare(b.name)
+}
+
+let simulation = function (id, path, data, method) {
+  simulationService.makeFile(path).then(() => {
+    return simulationService.simulation(path, data)
+  }).then(() => {
+    handleSimulationData(id, path, method)
+  }).catch(error => {
+    //console.log(error)
+  })
+}
+
+let handleSimulationData = function (id, path, method) {
+  let configPath = '../.' + path + 'config'
+  let config = require(configPath).config.simulationOutPutFileName
+
+  let filesName  = ['baseSpin', 'bonusSpin', 'overallSpin', 'survivalRate']
+  let tablesName = ['basegame', 'freegame', 'overall', 'survivalrate']
+
+  for (let index in filesName) {
+    if (config[filesName[index]] !== undefined && config[filesName[index]] !== null) {
+      if (filesName[index] !== 'survivalRate') {
+        dataRepository.uploadData(id, tablesName[index], path + 'result/' + config[filesName[index]] + csv, 'netWin' + ((filesName[index] === 'overallSpin') ? ',triger' : ''))
+      } else {
+        dataRepository.uploadData(id, tablesName[index], path + 'result/' + config[filesName[index]] + csv, 'id,hand,isSurvival')
+      }
+    }
+  }
+  for (let othersInfo of config.othersInfo) {
+    let data = {
+      name: othersInfo.infoName,
+      data: path + 'result/' + othersInfo.fileName
+    }
+    if (method === 'insert') {
+      dataRepository.insertData(id, 'others', data)
+    } else if (method === 'update') {
+      dataRepository.updateData(id, 'others', data)
+    }
+  }
+}
 
 // get all project
 let getAllProject = function (token) {
@@ -90,6 +131,12 @@ let getProjectTypeById = function (token, id) {
   })
 }
 
+let dataSet  = ['name', 'block', 'thread', 'runTime', 'reels', 'rows', 'betCost']
+let fileName = ['symbol', 'stops', 'payTable', 'attr', 'pattern']
+
+let csv    = '.csv'
+let folder = './userProject/'
+
 // create a new project 
 let create = function (token, body) {
   let userId
@@ -127,42 +174,69 @@ let create = function (token, body) {
       data.config    = './'
       data.gameLogic = './'
 
-      return projectTypeRepository.getTypeById(data.typeId)
-    }).then(() => {
       return projectRepoisitory.createProject(data)
     }).then(() => {
       return projectRepoisitory.getNewestProject(userId)
     }).then(projectInfo => {
       id = projectInfo.id
-      path = folder + userId + '/' + id
+      path = folder + userId + '/' + id + '/'
       return fileService.createFolder(path)
     }).then(() => {
-      return fileService.createFolder(path + '/result')
+      return fileService.createFolder(path + 'result')
     }).then(() => {
       let promise = []
-
       for (let i of fileName) {
         if (files[i] !== undefined) {
-          data[i] = path + '/' + i + csv
-          promise.push(fileService.moveFile(files[i].path, data[i]))
+          if (!Array.isArray(files[i])) {
+            data[i] = path + i + csv
+            promise.push(fileService.moveFile(files[i].path, data[i]))
+            if (i === 'payTable' && Array.isArray(files['stops'])) {
+              data[i] = (data[i] + ',').repeat(files['stops'].length)
+              data[i] = data[i].slice(0, -1)
+            }
+          } else {
+            data[i] = ''
+            files[i].sort(compare)
+            for (let j in files[i]) {
+              let filePath = path + i + j + csv
+              data[i] += filePath + ','
+              promise.push(fileService.moveFile(files[i][j].path, filePath))
+            }
+            data[i] = data[i].slice(0, -1)
+          }
         }
       }
       
       if (files.config !== undefined) {
-        data.config = path + '/config.js'
+        data.config = path + 'config.js'
         promise.push(fileService.moveFile(files.config.path, data.config))
       }
-      if (files.gameLogic !== undefined) {
-        data.gameLogic = path + '/gameLogic.dll'
-        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
+      if (files.gameLogic !== undefined && files.gameLogic.length === 2) {
+        files.gameLogic.sort(compare)
+        data.gameLogic = path + 'SlotFunctions.cu,header.h'
+        promise.push(fileService.moveFile(files.gameLogic[0].path, path + 'Header.h'))
+        promise.push(fileService.moveFile(files.gameLogic[1].path, path + 'SlotFunctions.cu'))
       }
-      
+
+      let inputFile = ',' + (files['symbol'] !== undefined ? data['symbol'] : '') + '\n'
+      for (let i of ['reels', 'rows', 'betCost']) {
+        inputFile += ',' + data[i] + '\n'
+      }
+      for (let i of ['stops', 'payTable', 'attr', 'pattern']) {
+        if (files[i] !== undefined) {
+          inputFile += ',' + data[i] + '\n'
+        }
+      }
+
+      promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
 
       return Promise.all(promise)
     }).then(() => {
+      simulation(id, path, data, 'insert')
       resolve()
     }).catch(error => {
+      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'Project type error') {
@@ -183,56 +257,80 @@ let update = function (token, id, body) {
   let path
   let fields
   let files
+  let oldData
   return new Promise((resolve, reject) => {
     // check if the token is valid
     redisRepository.getAccountId(token).then(accountId => {
       userId = accountId
-      path   = folder + userId + '/' + id
+      path   = folder + userId + '/' + id + '/'
   
       data = {
         userId: userId
       }
-
+      return projectRepoisitory.getProjectById(id)
+    }).then(data => {
+      oldData = data
       return fileService.processFormData(body)
     }).then(result => {
       fields = result.fields
       files = result.files
 
       for (let i of dataSet) {
-        if (fields[i] === undefined) {
-          reject(errorMsgService.emptyInput)
-          return
-        } else {
+        if (fields[i] !== undefined) {
           data[i] = fields[i]
         }
       }
 
-      return projectTypeRepository.getTypeById(data.typeId)
-    }).then(() => {
       let promise = []
 
       for (let i of fileName) {
         if (files[i] !== undefined) {
-          data[i] = path + '/' + i + csv
-          promise.push(fileService.moveFile(files[i].path, data[i]))
+          if (!Array.isArray(files[i])) {
+            data[i] = path + i + csv
+            promise.push(fileService.moveFile(files[i].path, data[i]))
+            if (i === 'payTable' && Array.isArray(files['stops'])) {
+              data[i] = (data[i] + ',').repeat(files['stops'].length)
+              data[i] = data[i].slice(0, -1)
+            }
+          } else {
+            data[i] = ''
+            files[i].sort(compare)
+            for (let j in files[i]) {
+              let filePath = path + i + j + csv
+              data[i] += filePath + ','
+              promise.push(fileService.moveFile(files[i][j].path, filePath))
+            }
+            data[i] = data[i].slice(0, -1)
+          }
+          
         }
       }
-
+      
       if (files.config !== undefined) {
-        data.config = path + '/config.js'
+        data.config = path + 'config.js'
         promise.push(fileService.moveFile(files.config.path, data.config))
       }
-      if (files.gameLogic !== undefined) {
-        data.gameLogic = path + '/gameLogic.dll'
-        promise.push(fileService.moveFile(files.gameLogic.path, data.gameLogic))
+      if (files.gameLogic !== undefined && files.gameLogic.length === 2) {
+        files.gameLogic.sort(compare)
+        data.gameLogic = path + 'SlotFunctions.cu,header.h'
+        promise.push(fileService.moveFile(files.gameLogic[0].path, path + 'Header.h'))
+        promise.push(fileService.moveFile(files.gameLogic[1].path, path + 'SlotFunctions.cu'))
       }
 
+      let inputFile = ''
+      for (let i of ['symbol', 'reels', 'rows', 'betCost', 'stops', 'payTable', 'attr', 'pattern']) {
+        inputFile += ',' + (data[i] !== undefined ? data[i] : oldData[i]) + '\n'
+      }
+
+      promise.push(fileService.createFile(path + 'input.csv', inputFile))
       promise.push(projectRepoisitory.updateProject(id, data))
     
       return Promise.all(promise)
     }).then(() => {
+      simulation(id, path, data, 'update')
       resolve()
     }).catch(error => {
+      console.log(error)
       if (error === 'token expired') {
         reject(errorMsgService.tokenExpired)
       } else if (error === 'file error') {
