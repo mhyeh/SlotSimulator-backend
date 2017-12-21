@@ -1,5 +1,5 @@
 let Promise       = require('bluebird')
-let child_process = require('child_process')
+let child_process = require('child-process-promise')
 
 let redisRepository       = require('../Repositories/RedisRepository')
 let projectRepoisitory    = require('../Repositories/ProjectRepository')
