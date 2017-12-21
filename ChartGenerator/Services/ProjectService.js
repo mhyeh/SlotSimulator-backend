@@ -234,6 +234,8 @@ let create = function (token, body) {
 
       return Promise.all(promise)
     }).then(() => {
+      return child_process.exec('chmod -R 777 ' + path)
+    }).then(() => {
       let promise = []
       for (let i of fileName) {
         if (Array.isArray(files[i])) {
@@ -343,6 +345,8 @@ let update = function (token, id, body) {
       promise.push(projectRepoisitory.updateProject(id, data))
     
       return Promise.all(promise)
+    }).then(() => {
+      return child_process.exec('chmod -R 777 ' + path)
     }).then(() => {
       let promise = []
       for (let i of fileName) {
