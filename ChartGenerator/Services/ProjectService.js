@@ -236,24 +236,24 @@ let create = function (token, body) {
     }).then(() => {
       return child_process.exec('chmod -R 777 ' + path)
     }).then(() => {
-      let promise = []
-      for (let i of fileName) {
-        if (Array.isArray(files[i])) {
-          for (let j in files[i]) {
-            let filePath = path + i + j + csv
-            let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
-            console.log(cmd)
-            promise.push(child_process.exec(cmd))
-          }
-        } else {
-          let filePath = path + i + csv
-          let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
-          console.log(cmd)
-          promise.push(child_process.exec(cmd))
-        }
-      }
-      return Promise.all(promise)
-    }).then(() => {
+    //   let promise = []
+    //   for (let i of fileName) {
+    //     if (Array.isArray(files[i])) {
+    //       for (let j in files[i]) {
+    //         let filePath = path + i + j + csv
+    //         let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+    //         console.log(cmd)
+    //         promise.push(child_process.exec(cmd))
+    //       }
+    //     } else {
+    //       let filePath = path + i + csv
+    //       let cmd = "tr -d '\\r' < " + filePath + ' > ' + filePath
+    //       console.log(cmd)
+    //       promise.push(child_process.exec(cmd))
+    //     }
+    //   }
+    //   return Promise.all(promise)
+    // }).then(() => {
       simulation(id, path, data, 'insert')
       resolve()
     }).catch(error => {
